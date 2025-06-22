@@ -4,7 +4,8 @@ project(grSim VERSION 0.1.0)
 add_executable(grSim
     src/main.cpp
     src/utils/shader_utils.cpp
-    src/mesh/circleMesh.cpp
+    src/mesh/sphereMesh.cpp
+    src/kinematics/body.cpp
 )
 
 include(FetchContent)

@@ -4,8 +4,9 @@
 #include <SOIL2/SOIL2.h>
 #include <iostream>
 #include <utils/shader_utils.h>
-#include <mesh/circleMesh.h>
+#include <mesh/sphereMesh.hpp>
 #include <constans.h>
+#include <kinematics/body.hpp>
 
 int main(){
     glfwInit();
@@ -40,14 +41,13 @@ int main(){
     int segments = 100;
     std::vector<float> circleMesh = getCircleMesh(100, segments);
 
-
     GLuint VBO, VAO;
     glGenBuffers(1, &VBO);
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, circleMesh.size() * sizeof(float), circleMesh.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, circleMesh.size() * sizeof(float), circleMesh.data(), GL_DYNAMIC_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
     glEnableVertexAttribArray(0);
@@ -56,15 +56,35 @@ int main(){
 
     glBindVertexArray(0);
 
-
+    std::vector<Body*> bodies = {
+        new Body(glm::vec3{0,0,0},glm::vec3{100, 0, 0},glm::vec3{0}, 100)
+    };
 
     while(!glfwWindowShouldClose(window)){
         glfwPollEvents();
+
         glUseProgram(shaderProgram);
-
         glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLE_FAN, 0, circleMesh.size() / 3);
 
+        // λδκφ ζν σδκ φελτκ γδ!
+        for(int i = 0;i != bodies.size();i++){
+            bodies[i]->update(dt, bodies, i);
+            std::cout << bodies[i]->position[0] << std::endl;
+
+            std::vector<float> vertices = getCircleMesh(bodies[i]->radius, segments);
+
+            for(int j = 0;j != vertices.size()/3;j++){
+                for(int k = 0;k != 3;k++){
+                    vertices[j*3 + k] += bodies[i]->position[k];
+                }
+            }
+
+            circleMesh = vertices;
+
+            glDrawArrays(GL_TRIANGLE_FAN, 0, circleMesh.size() / 3);
+        }
+
+        glBindVertexArray(0);
         glfwSwapBuffers(window);
     }
 
