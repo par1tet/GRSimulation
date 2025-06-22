@@ -41,8 +41,11 @@ int main(){
 
     glViewport(0,0, width, heigth);
 
+
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
     int segments = 100;
-    std::vector<float> circleMesh = generateSphereVertices(.1, 36, 18);
+    std::vector<float> circleMesh = generateSphereVertices(1, 36, 18);
 
     GLuint VBO, VAO;
     glGenBuffers(1, &VBO);
@@ -58,11 +61,11 @@ int main(){
     glBindVertexArray(0);
 
     std::vector<Body*> bodies = {
-        new Body(glm::vec3{0.5,.3,0},glm::vec3{0.00, 0, 0},glm::vec3{0}, 0.1),
-        new Body(glm::vec3{-0.6,-0.4,0},glm::vec3{-0.0, -0.0, 0},glm::vec3{0}, 0.1)
+        new Body(glm::vec3{8,15,0},glm::vec3{0.00, 0, 0},glm::vec3{0}, 0.1),
+        new Body(glm::vec3{-8,15,0},glm::vec3{-0.0, -0.0, 0},glm::vec3{0}, 0.1)
     };
 
-    Camera* camera = new Camera({0, 0, -3}, window);
+    Camera* camera = new Camera({0, 0, 0}, window);
 
     while(!glfwWindowShouldClose(window)){
         glfwPollEvents();
