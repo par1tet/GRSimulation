@@ -2,7 +2,12 @@
 
 layout (location = 0) in vec3 position;
 
+uniform mat4 transformM;
+uniform mat4 modelM;
+uniform mat4 viewM;
+uniform mat4 projM;
+
 void main()
 {
-    gl_Position = vec4(position.x, position.y, position.z, 1.0);
+    gl_Position = projM * viewM * modelM * transformM * vec4(position.x, position.y, position.z, 1.0);
 }

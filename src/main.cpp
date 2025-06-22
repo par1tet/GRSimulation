@@ -7,13 +7,15 @@
 #include <mesh/sphereMesh.hpp>
 #include <constans.h>
 #include <kinematics/body.hpp>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 int main(){
     glfwInit();
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 
     GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "GLSim", nullptr, nullptr);
 
@@ -39,7 +41,7 @@ int main(){
     glViewport(0,0, width, heigth);
 
     int segments = 100;
-    std::vector<float> circleMesh = getCircleMesh(100, segments);
+    std::vector<float> circleMesh = generateSphereVertices(0.5, 36, 18);
 
     GLuint VBO, VAO;
     glGenBuffers(1, &VBO);
@@ -47,42 +49,54 @@ int main(){
     glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, circleMesh.size() * sizeof(float), circleMesh.data(), GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, circleMesh.size() * sizeof(float), circleMesh.data(), GL_STATIC_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
     glEnableVertexAttribArray(0);
 
-    glBindBuffer(GL_ARRAY_BUFFER, VAO);
-
     glBindVertexArray(0);
 
     std::vector<Body*> bodies = {
-        new Body(glm::vec3{0,0,0},glm::vec3{100, 0, 0},glm::vec3{0}, 100)
+        new Body(glm::vec3{0,0,0},glm::vec3{0.1, 0, 0},glm::vec3{0}, 10)
     };
 
     while(!glfwWindowShouldClose(window)){
         glfwPollEvents();
+        glEnable(GL_DEPTH_TEST);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glUseProgram(shaderProgram);
         glBindVertexArray(VAO);
+
+        glm::mat4 trans = glm::mat4(1);
+        GLuint transformLoc = glGetUniformLocation(shaderProgram, "transformM");
+
+        glm::mat4 model = glm::mat4(1);
+        model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        GLuint modelLoc = glGetUniformLocation(shaderProgram, "modelM");
+
+        glm::mat4 view = glm::mat4(1);
+        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+        GLuint viewLoc = glGetUniformLocation(shaderProgram, "viewM");
+
+        glm::mat4 projection = glm::mat4(1);
+        projection = glm::perspective(glm::radians(45.0f), float(WIDTH) / HEIGHT, 0.1f, 100.0f);
+        GLuint projLoc = glGetUniformLocation(shaderProgram, "projM");
 
         // λδκφ ζν σδκ φελτκ γδ!
         for(int i = 0;i != bodies.size();i++){
             bodies[i]->update(dt, bodies, i);
             std::cout << bodies[i]->position[0] << std::endl;
+            trans = glm::translate(trans, bodies[i]->position);
 
-            std::vector<float> vertices = getCircleMesh(bodies[i]->radius, segments);
+            glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
-            for(int j = 0;j != vertices.size()/3;j++){
-                for(int k = 0;k != 3;k++){
-                    vertices[j*3 + k] += bodies[i]->position[k];
-                }
-            }
-
-            circleMesh = vertices;
-
-            glDrawArrays(GL_TRIANGLE_FAN, 0, circleMesh.size() / 3);
+            glDrawArrays(GL_TRIANGLE_STRIP, 0, circleMesh.size() / 3);
         }
+
+        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+        glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
         glBindVertexArray(0);
         glfwSwapBuffers(window);

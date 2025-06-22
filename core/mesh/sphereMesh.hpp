@@ -7,3 +7,4 @@
 #pragma once
 
 std::vector<float> getCircleMesh(float radius, int segments);
+std::vector<float> generateSphereVertices(float radius, int sectors, int stacks);
