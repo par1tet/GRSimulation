@@ -3,6 +3,8 @@ project(grSim VERSION 0.1.0)
 
 add_executable(grSim
     src/main.cpp
+    src/utils/shader_utils.cpp
+    src/mesh/circleMesh.cpp
 )
 
 include(FetchContent)
@@ -28,3 +30,4 @@ find_package(OpenGL REQUIRED)
 find_package(glm REQUIRED)
 
 target_link_libraries(grSim PRIVATE soil2 glad glfw OpenGL::GL glm::glm)
+target_compile_definitions(grSim PRIVATE CMAKE_SOURCE_PATH="${CMAKE_SOURCE_DIR}/")
