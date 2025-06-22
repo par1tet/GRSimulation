@@ -10,6 +10,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <classes/camera.hpp>
 
 int main(){
     glfwInit();
@@ -17,7 +18,7 @@ int main(){
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 
-    GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "GLSim", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "GRSim", nullptr, nullptr);
 
     if (window == nullptr){
         glfwTerminate();
@@ -41,7 +42,7 @@ int main(){
     glViewport(0,0, width, heigth);
 
     int segments = 100;
-    std::vector<float> circleMesh = generateSphereVertices(0.5, 36, 18);
+    std::vector<float> circleMesh = generateSphereVertices(.1, 36, 18);
 
     GLuint VBO, VAO;
     glGenBuffers(1, &VBO);
@@ -57,8 +58,11 @@ int main(){
     glBindVertexArray(0);
 
     std::vector<Body*> bodies = {
-        new Body(glm::vec3{0,0,0},glm::vec3{0.1, 0, 0},glm::vec3{0}, 10)
+        new Body(glm::vec3{0.5,.3,0},glm::vec3{0.00, 0, 0},glm::vec3{0}, 0.1),
+        new Body(glm::vec3{-0.6,-0.4,0},glm::vec3{-0.0, -0.0, 0},glm::vec3{0}, 0.1)
     };
+
+    Camera* camera = new Camera({0, 0, -3}, window);
 
     while(!glfwWindowShouldClose(window)){
         glfwPollEvents();
@@ -74,9 +78,6 @@ int main(){
         glm::mat4 model = glm::mat4(1);
         model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
         GLuint modelLoc = glGetUniformLocation(shaderProgram, "modelM");
-
-        glm::mat4 view = glm::mat4(1);
-        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
         GLuint viewLoc = glGetUniformLocation(shaderProgram, "viewM");
 
         glm::mat4 projection = glm::mat4(1);
@@ -86,7 +87,7 @@ int main(){
         // λδκφ ζν σδκ φελτκ γδ!
         for(int i = 0;i != bodies.size();i++){
             bodies[i]->update(dt, bodies, i);
-            std::cout << bodies[i]->position[0] << std::endl;
+            //std::cout << bodies[i]->position[0] << std::endl;
             trans = glm::translate(trans, bodies[i]->position);
 
             glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
@@ -95,7 +96,9 @@ int main(){
             glDrawArrays(GL_TRIANGLE_STRIP, 0, circleMesh.size() / 3);
         }
 
-        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+        camera->update();
+
+        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(camera->viewMatrix));
         glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
         glBindVertexArray(0);

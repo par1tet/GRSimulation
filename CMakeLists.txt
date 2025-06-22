@@ -6,6 +6,7 @@ add_executable(grSim
     src/utils/shader_utils.cpp
     src/mesh/sphereMesh.cpp
     src/kinematics/body.cpp
+    src/classes/camera.cpp
 )
 
 include(FetchContent)
