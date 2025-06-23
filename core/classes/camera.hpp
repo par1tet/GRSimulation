@@ -11,9 +11,9 @@ public:
     glm::vec3 position, direction, upVector;
     glm::mat4 viewMatrix;
     bool keys[255]{false};
-    double lastX = WIDTH, lastY = HEIGHT;
-    double yaw = 0.f, pitch = 0;
-    double sens = 0.05;
+    double lastX, lastY;
+    double yaw, pitch;
+    double sens;
 
     Camera(glm::vec3 position, GLFWwindow* window);
     void moveHandler(int key, int action);

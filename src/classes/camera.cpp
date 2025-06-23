@@ -5,10 +5,19 @@
 Camera::Camera(glm::vec3 position, GLFWwindow* window){
     this->position = position;
 
+    this->lastX = WIDTH / 2;
+    this->lastY = HEIGHT / 2;
+
+    this->yaw = -90.f;
+    this->pitch = 0.f;
+    this->sens = 0.05;
+
     glm::vec3 front;
-    front.x = cos(glm::radians(pitch)) * cos(glm::radians(yaw));
-    front.y = sin(glm::radians(pitch));
-    front.z = cos(glm::radians(pitch)) * sin(glm::radians(yaw));
+
+    front.x = cos(glm::radians(this->pitch)) * cos(glm::radians(this->yaw));
+    front.y = sin(glm::radians(this->pitch));
+    front.z = cos(glm::radians(this->pitch)) * sin(glm::radians(this->yaw));
+
     this->direction = glm::normalize(front);
     this->upVector = glm::vec3(0,1,0);
 
@@ -37,7 +46,6 @@ void Camera::keyCallbackDispatcher(GLFWwindow* window, int key, int scancode, in
 }
 
 void Camera::update(){
-    this->viewMatrix = glm::lookAt(this->position, this->position + this->direction, this->upVector);
     GLfloat cameraSpeed = 0.4f;
     
     if(this->keys['W']){
@@ -54,10 +62,12 @@ void Camera::update(){
     }
 
     glm::vec3 front;
-    front.x = cos(glm::radians(pitch)) * cos(glm::radians(yaw));
-    front.y = sin(glm::radians(pitch));
-    front.z = cos(glm::radians(pitch)) * sin(glm::radians(yaw));
+    front.x = cos(glm::radians(this->pitch)) * cos(glm::radians(this->yaw));
+    front.y = sin(glm::radians(this->pitch));
+    front.z = cos(glm::radians(this->pitch)) * sin(glm::radians(this->yaw));
     this->direction = glm::normalize(front);
+
+    this->viewMatrix = glm::lookAt(this->position, this->position + this->direction, this->upVector);
 }
 
 void Camera::keyCallbackDispatcherMouse(GLFWwindow* window, double xpos, double ypos){
