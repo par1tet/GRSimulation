@@ -11,6 +11,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <classes/camera.hpp>
+#include <../core/classes/SpaceTime/Metrices/SchwarzschildMetric.hpp>
 
 int main(){
     glfwInit();
@@ -61,13 +62,15 @@ int main(){
 
     glBindVertexArray(0);
 
+    SchwarzschildMetric* sZmetric = new SchwarzschildMetric(1);
+
     Camera* camera = new Camera({0, 0, 0}, window);
 
     std::vector<Body*> bodies = {
-        new Body(glm::vec3{-5,0,-15},glm::vec3{0, 0, 0},glm::vec3{0}, 1, 1e13),
-        new Body(glm::vec3{5,0,-16},glm::vec3{-1, 5, 0},glm::vec3{0}, 1, 1),
-        new Body(glm::vec3{9,6,-10},glm::vec3{-1, 5, -1},glm::vec3{0}, 1, 1),
-        new Body(glm::vec3{-5,2,8},glm::vec3{-1, -5, -1},glm::vec3{0}, 1, 1)
+        new Body(glm::vec3{-5,0,-15},glm::vec4{0, 0, 0, 0},glm::vec4{0}, 1, 1e13),
+        new Body(glm::vec3{5,0,-16},glm::vec4{0, -1, 5, 0},glm::vec4{0}, 1, 1),
+        new Body(glm::vec3{9,6,-10},glm::vec4{0, -1, 5, -1},glm::vec4{0}, 1, 1),
+        new Body(glm::vec3{-5,2,8},glm::vec4{0, -1, -5, -1},glm::vec4{0}, 1, 1)
     };
 
     while(!glfwWindowShouldClose(window)){
@@ -95,7 +98,8 @@ int main(){
         for(int i = 0;i != bodies.size();i++){
             glm::mat4 model = glm::mat4(1);
             bodies[i]->update(dt, bodies, i);
-            model = glm::translate(model, bodies[i]->position);
+            glm::vec4 pos = bodies[i]->getPosition();
+            model = glm::translate(model, glm::vec3(pos.y, pos.z, pos.w));
 
             glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
             glDrawArrays(GL_TRIANGLE_STRIP, 0, circleMesh.size() / 3);

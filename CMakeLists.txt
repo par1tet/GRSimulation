@@ -16,6 +16,20 @@ FetchContent_Declare(soil2
 )  
 FetchContent_MakeAvailable(soil2)
 
+FetchContent_Declare(
+    diffgeomeng
+    GIT_REPOSITORY https://github.com/par1tet/diffgeomengine
+    GIT_TAG main
+)
+FetchContent_MakeAvailable(diffgeomeng)
+
+target_include_directories(diffgeomeng
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+
+
+
 add_library(glad STATIC libs/glad/src/glad.c)
 target_include_directories(glad PUBLIC libs/glad/include)
 
@@ -31,5 +45,5 @@ find_package(glfw3 REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(glm REQUIRED)
 
-target_link_libraries(grSim PRIVATE soil2 glad glfw OpenGL::GL glm::glm)
+target_link_libraries(grSim PRIVATE soil2 glad glfw OpenGL::GL glm::glm diffgeomeng)
 target_compile_definitions(grSim PRIVATE CMAKE_SOURCE_PATH="${CMAKE_SOURCE_DIR}/")
