@@ -12,7 +12,9 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <GR/camera.hpp>
 #include <../core/GR/SpaceTime/Metrices/SchwarzschildMetric.hpp>
+#include <../core/GR/SpaceTime/spaceTime.hpp>
 #include <../core/kinematics/physicsEngine.hpp>
+
 
 int main(){
     glfwInit();
@@ -64,17 +66,18 @@ int main(){
     glBindVertexArray(0);
 
     SchwarzschildMetric* sZmetric = new SchwarzschildMetric(1);
+    SpaceTime* spaceTime = new SpaceTime(sZmetric);
 
     Camera* camera = new Camera({0, 0, 0}, window);
 
     std::vector<Body*> bodies = {
-        new Body(glm::vec3{-5,0,-15},glm::vec4{0, 0, 0, 0},glm::vec4{0}, 1, 1e13),
-        new Body(glm::vec3{5,0,-16},glm::vec4{0, -1, 5, 0},glm::vec4{0}, 1, 1),
-        new Body(glm::vec3{9,6,-10},glm::vec4{0, -1, 5, -1},glm::vec4{0}, 1, 1),
-        new Body(glm::vec3{-5,2,8},glm::vec4{0, -1, -5, -1},glm::vec4{0}, 1, 1)
+        new Body(new State({0, -5,0,-15},{0, 0, 0, 0}, 4),glm::vec4{0}, 1, 1e13),
+        new Body(new State({0, 5,0,-16},{0, -1, 5, 0}, 4),glm::vec4{0}, 1, 1),
+        new Body(new State({0, 9,6,-10},{0, -1, 5, -1}, 4),glm::vec4{0}, 1, 1),
+        new Body(new State({0, -5,2,8},{0, -1, -5, -1}, 4),glm::vec4{0}, 1, 1),
     };
 
-    PhysicsEngine* physEng = new PhysicsEngine(bodies);
+    PhysicsEngine* physEng = new PhysicsEngine(bodies, spaceTime);
 
     while(!glfwWindowShouldClose(window)){
         glfwPollEvents();
@@ -103,7 +106,8 @@ int main(){
         // λδκφ ζν σδκ φελτκ γδ!
         for(int i = 0;i != bodies.size();i++){
             glm::mat4 model = glm::mat4(1);
-            glm::vec4 pos = bodies[i]->getPosition();
+            std::vector<double> x0 = bodies[i]->getState()->x0;
+            glm::vec4 pos{x0[0], x0[1], x0[2], x0[3]};
             model = glm::translate(model, glm::vec3(pos.y, pos.z, pos.w));
 
             glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));

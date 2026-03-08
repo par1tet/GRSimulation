@@ -4,24 +4,26 @@
 #include<math.h>
 #include<diffgeomeng/classes/diff/Manifold.hpp>
 
-Body::Body(glm::vec3 position, glm::vec4 speed, glm::vec4 force, float radius, unsigned long long mass){
-    this->position = glm::vec4{0.f, position};
-    this->speed = speed;
+Body::Body(State *state, glm::vec4 force, float radius, unsigned long long mass){
+    this->state = state;
     this->force = force;
     this->radius = radius;
     this->mass = mass;
     this->selftime = 0;
 }
 
-Body::Body(glm::vec4 position, glm::vec4 speed, glm::vec4 force, float radius, unsigned long long mass){
-    this->position = position;
-    this->speed = speed;
-    this->force = force;
-    this->radius = radius;
-    this->mass = mass;
-    this->selftime = 0;
+State* Body::getState(){
+    return this->state;
 }
 
-glm::vec4 Body::getPosition(){
-    return this->position;
+void Body::setState(State* state){
+    this->state = state;
+}
+
+void Body::setSelfTime(float newSelfTime){
+    this->selftime = newSelfTime;
+}
+
+float Body::getSelfTime(){
+    return this->selftime;
 }
