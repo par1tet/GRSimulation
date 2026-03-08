@@ -10,8 +10,9 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <classes/camera.hpp>
-#include <../core/classes/SpaceTime/Metrices/SchwarzschildMetric.hpp>
+#include <GR/camera.hpp>
+#include <../core/GR/SpaceTime/Metrices/SchwarzschildMetric.hpp>
+#include <../core/kinematics/physicsEngine.hpp>
 
 int main(){
     glfwInit();
@@ -73,6 +74,8 @@ int main(){
         new Body(glm::vec3{-5,2,8},glm::vec4{0, -1, -5, -1},glm::vec4{0}, 1, 1)
     };
 
+    PhysicsEngine* physEng = new PhysicsEngine(bodies);
+
     while(!glfwWindowShouldClose(window)){
         glfwPollEvents();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -89,15 +92,17 @@ int main(){
         GLuint projLoc = glGetUniformLocation(shaderProgram, "projM");
 
         camera->update();
+        physEng->update(dt);
         GLuint viewLoc = glGetUniformLocation(shaderProgram, "viewM");
 
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(camera->viewMatrix));
         glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
+
+
         // λδκφ ζν σδκ φελτκ γδ!
         for(int i = 0;i != bodies.size();i++){
             glm::mat4 model = glm::mat4(1);
-            bodies[i]->update(dt, bodies, i);
             glm::vec4 pos = bodies[i]->getPosition();
             model = glm::translate(model, glm::vec3(pos.y, pos.z, pos.w));
 

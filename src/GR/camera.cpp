@@ -1,4 +1,4 @@
-#include <classes/camera.hpp>
+#include <GR/camera.hpp>
 #include <GLFW/glfw3.h>
 #include <iostream>
 

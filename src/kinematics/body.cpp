@@ -22,33 +22,6 @@ Body::Body(glm::vec4 position, glm::vec4 speed, glm::vec4 force, float radius, u
     this->selftime = 0;
 }
 
-void Body::update(float dt, std::vector<Body*> bodies, int selfID){
-    glm::vec3 newAcceleration{0.f};
-
-    for(int i = 0;i != bodies.size();i++){
-        if(i == selfID) continue;
-
-        glm::vec3 direction = bodies[i]->position - this->position;
-
-        float dist = glm::length(direction);
-
-        float gravityForce = (G*bodies[i]->mass)/(dist*dist*dist);
-
-        glm::vec3 gA = direction * gravityForce;
-
-        newAcceleration+=gA;
-
-        if(dist < bodies[i]->radius + this->radius){
-            this->speed *= -1;
-        }
-    }
-
-    this->acceleration = newAcceleration;
-
-    this->speed += this->acceleration * dt;
-    this->position += this->speed * dt;
-}
-
 glm::vec4 Body::getPosition(){
     return this->position;
 }

@@ -6,7 +6,10 @@ add_executable(grSim
     src/utils/shader_utils.cpp
     src/mesh/sphereMesh.cpp
     src/kinematics/body.cpp
-    src/classes/camera.cpp
+    src/kinematics/physicsEngine.cpp
+    src/GR/camera.cpp
+    src/GR/SpaceTime/spaceTime.cpp
+    src/GR/SpaceTime/Metrices/SchwarzschildMetric.cpp
 )
 
 include(FetchContent)
@@ -22,13 +25,6 @@ FetchContent_Declare(
     GIT_TAG main
 )
 FetchContent_MakeAvailable(diffgeomeng)
-
-target_include_directories(diffgeomeng
-    PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
-)
-
-
 
 add_library(glad STATIC libs/glad/src/glad.c)
 target_include_directories(glad PUBLIC libs/glad/include)
