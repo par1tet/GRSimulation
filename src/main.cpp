@@ -71,10 +71,10 @@ int main(){
     Camera* camera = new Camera({0, 0, 0}, window);
 
     std::vector<Body*> bodies = {
-        new Body(new State({0, -5,0,-15},{0, 0, 0, 0}, 4),glm::vec4{0}, 1, 1e13),
-        new Body(new State({0, 5,0,-16},{0, -1, 5, 0}, 4),glm::vec4{0}, 1, 1),
-        new Body(new State({0, 9,6,-10},{0, -1, 5, -1}, 4),glm::vec4{0}, 1, 1),
-        new Body(new State({0, -5,2,8},{0, -1, -5, -1}, 4),glm::vec4{0}, 1, 1),
+        new Body(new State({0, -5,0,-15},{1, 0, 0, 0}, 4),glm::vec4{0}, 1, 1e13),
+        new Body(new State({0, 5,0,-16},{1, -1, 5, 0}, 4),glm::vec4{0}, 1, 1),
+        new Body(new State({0, 9,6,-10},{1, -1, 5, -1}, 4),glm::vec4{0}, 1, 1),
+        new Body(new State({0, -5,2,8},{1, -1, -5, -1}, 4),glm::vec4{0}, 1, 1),
     };
 
     PhysicsEngine* physEng = new PhysicsEngine(bodies, spaceTime);

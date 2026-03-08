@@ -8,6 +8,7 @@ PhysicsEngine::PhysicsEngine(std::vector<Body*> bodies, SpaceTime* spaceTime){
     this->spaceTime = spaceTime;
 }
 
+// JJTODO СДЕЛАТЬ МАЛЕНЬКИЕ ПРИКОЛЬЧИКИ ДЛЯ НУЛЛ ГЕОДЕЗИКОВ ФОТОНЧИКАВА !! ^^
 void PhysicsEngine::update(double dt){
     std::cout << "update" << std::endl;
 
@@ -15,22 +16,26 @@ void PhysicsEngine::update(double dt){
     Geodesic* geodesic = manifold->getGeodesic();
     double newTime = this->time + dt;
 
-    for(int i = 0;i != this->bodies.size();i++){
-        Body* currentBody = this->bodies[i];
-        State* state = currentBody->getState();
+    for (Body* body : bodies){
+        State* state = body->getState();
 
-        *state = manifold->normalizeVelocity(*state);
-        
-        float dtau = dt / state->v0[0];
+
+        std::cout << manifold->getMetric()->getInvariant(*state) << std::endl;
+
+        double dtau = std::min(dt / state->v0[0], 0.001);;
+
+        if (fabs(state->v0[0]) < 1e-12)
+            throw "OBJECT MOVE'S SO SLOWLY IN SPACE--TIME!!!1";
 
         *state = geodesic->computeGeodesicNextState(
             dtau,
-            *state,
-            0.002
+            *state
         );
 
-        currentBody->setState(state);
-        currentBody->setSelfTime(currentBody->getSelfTime() + dtau);
+        body->setState(state);
+        body->setSelfTime(body->getSelfTime() + dtau);
+
+        *state = manifold->normalizeVelocity(*state);
     }
 
     this->time = newTime;
