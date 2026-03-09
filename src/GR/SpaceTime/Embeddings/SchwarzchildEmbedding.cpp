@@ -15,7 +15,7 @@ Embedding SchwarzchildEmbedding(double mass){
         std::vector<double> x_dec(n, 0);
 
         double r = x[1];
-        double phi = x[2];
+        double phi = x[3];
 
         x_dec[1] = r * cos(phi);
         x_dec[2] = r * sin(phi);

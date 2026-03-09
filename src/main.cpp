@@ -70,10 +70,10 @@ int main(){
     SchwarzschildMetric* sZmetric = new SchwarzschildMetric(mass);
     SpaceTime* spaceTime = new SpaceTime(sZmetric, SchwarzchildEmbedding(mass));
 
-    Camera* camera = new Camera({0, 0, 0}, window);
+    Camera* camera = new Camera({0, 10, 0}, window);
 
     std::vector<Body*> bodies = {
-        new Body(new State({0, 20,0,M_PI/2},{1, 0, 0, 0}, 4),glm::vec4{0}, 1, 1),
+        new Body(new State({0, 10,M_PI/2,0},{1.194, 0, 0, 0.0378}, 4),glm::vec4{0}, 1, 1),
     };
 
     PhysicsEngine* physEng = new PhysicsEngine(bodies, spaceTime);
