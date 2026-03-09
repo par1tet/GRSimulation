@@ -22,14 +22,17 @@ void PhysicsEngine::update(double dt){
 
         std::cout << manifold->getMetric()->getInvariant(*state) << std::endl;
 
-        double dtau = std::min(dt / state->v0[0], 0.001);;
+        double dtau = std::max(dt / state->v0[0], 1e7);;
 
         if (fabs(state->v0[0]) < 1e-12)
             throw "OBJECT MOVE'S SO SLOWLY IN SPACE--TIME!!!1";
 
         *state = geodesic->computeGeodesicNextState(
             dtau,
-            *state
+            *state,
+            0.002,
+            zero,
+            true
         );
 
         body->setState(state);

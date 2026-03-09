@@ -11,10 +11,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <GR/camera.hpp>
-#include <../core/GR/SpaceTime/Metrices/SchwarzschildMetric.hpp>
-#include <../core/GR/SpaceTime/spaceTime.hpp>
-#include <../core/kinematics/physicsEngine.hpp>
-
+#include <GR/SpaceTime/Metrices/SchwarzschildMetric.hpp>
+#include <GR/SpaceTime/spaceTime.hpp>
+#include <kinematics/physicsEngine.hpp>
+#include<GR/SpaceTime/Embeddings/SchwarzschildEmbedding.hpp>
 
 int main(){
     glfwInit();
@@ -65,16 +65,15 @@ int main(){
 
     glBindVertexArray(0);
 
-    SchwarzschildMetric* sZmetric = new SchwarzschildMetric(1);
-    SpaceTime* spaceTime = new SpaceTime(sZmetric);
+    double mass = 1.f;
+
+    SchwarzschildMetric* sZmetric = new SchwarzschildMetric(mass);
+    SpaceTime* spaceTime = new SpaceTime(sZmetric, SchwarzchildEmbedding(mass));
 
     Camera* camera = new Camera({0, 0, 0}, window);
 
     std::vector<Body*> bodies = {
-        new Body(new State({0, -5,0,-15},{1, 0, 0, 0}, 4),glm::vec4{0}, 1, 1e13),
-        new Body(new State({0, 5,0,-16},{1, -1, 5, 0}, 4),glm::vec4{0}, 1, 1),
-        new Body(new State({0, 9,6,-10},{1, -1, 5, -1}, 4),glm::vec4{0}, 1, 1),
-        new Body(new State({0, -5,2,8},{1, -1, -5, -1}, 4),glm::vec4{0}, 1, 1),
+        new Body(new State({0, 20,0,M_PI/2},{1, 0, 0, 0}, 4),glm::vec4{0}, 1, 1),
     };
 
     PhysicsEngine* physEng = new PhysicsEngine(bodies, spaceTime);
@@ -83,7 +82,7 @@ int main(){
         glfwPollEvents();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        system("clear");
+        std::cout << "<-------------UPDATE-------------->" << std::endl;
 
         glUseProgram(shaderProgram);
         glBindVertexArray(VAO);
@@ -101,13 +100,24 @@ int main(){
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(camera->viewMatrix));
         glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
-
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(glm::mat4(1)));
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, circleMesh.size() / 3);
 
         // λδκφ ζν σδκ φελτκ γδ!
         for(int i = 0;i != bodies.size();i++){
             glm::mat4 model = glm::mat4(1);
             std::vector<double> x0 = bodies[i]->getState()->x0;
-            glm::vec4 pos{x0[0], x0[1], x0[2], x0[3]};
+
+            std::vector<double> x0Emb = spaceTime->getManifold()->doEmbedding(x0);
+
+            std::cout << "--EMBEDET COORDINATES--" << std::endl;
+            std::cout << "t: " << x0Emb[0];
+            std::cout << "x: " << x0Emb[1];
+            std::cout << "y: " << x0Emb[2];
+            std::cout << "z: " << x0Emb[3];
+            std::cout << std::endl;
+
+            glm::vec4 pos{x0Emb[0], x0Emb[1], x0Emb[2], x0Emb[3]};
             model = glm::translate(model, glm::vec3(pos.y, pos.z, pos.w));
 
             glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));

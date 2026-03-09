@@ -25,9 +25,9 @@ double SchwarzschildMetric33(const std::vector<double> &x, double mass){
 std::vector<std::function<double(const std::vector<double>&)>> SchwarzschildComponents(double mass){
     return {
         [mass](const std::vector<double> &x){return SchwarzschildMetric00(x, mass);}, 
-        [mass](const std::vector<double> &x){return SchwarzschildMetric00(x, mass);}, 
-        [mass](const std::vector<double> &x){return SchwarzschildMetric00(x, mass);}, 
-        [mass](const std::vector<double> &x){return SchwarzschildMetric00(x, mass);}
+        [mass](const std::vector<double> &x){return SchwarzschildMetric11(x, mass);}, 
+        [mass](const std::vector<double> &x){return SchwarzschildMetric22(x, mass);}, 
+        [mass](const std::vector<double> &x){return SchwarzschildMetric33(x, mass);}
     };
 } 
 

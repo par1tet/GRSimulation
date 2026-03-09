@@ -5,6 +5,7 @@
 class SpaceTime{
 public:
     SpaceTime(Metric*);
+    SpaceTime(Metric*, Embedding);
 
     Manifold* getManifold();
 private:

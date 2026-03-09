@@ -10,6 +10,7 @@ add_executable(grSim
     src/GR/camera.cpp
     src/GR/SpaceTime/spaceTime.cpp
     src/GR/SpaceTime/Metrices/SchwarzschildMetric.cpp
+    src/GR/SpaceTime/Embeddings/SchwarzchildEmbedding.cpp
 )
 
 include(FetchContent)
@@ -22,8 +23,9 @@ FetchContent_MakeAvailable(soil2)
 FetchContent_Declare(
     diffgeomeng
     GIT_REPOSITORY https://github.com/par1tet/diffgeomengine
-    GIT_TAG main
+    GIT_TAG test
 )
+
 FetchContent_MakeAvailable(diffgeomeng)
 
 add_library(glad STATIC libs/glad/src/glad.c)
