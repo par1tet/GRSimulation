@@ -56,7 +56,7 @@ void PhysicsEngine::update(double dt){
         *state = geodesic->computeGeodesicNextState(
             dtau,
             *state,
-            0.006,
+            0.002,
             zero,
             true
         );

@@ -23,7 +23,7 @@ FetchContent_MakeAvailable(soil2)
 FetchContent_Declare(
     diffgeomeng
     GIT_REPOSITORY https://github.com/par1tet/diffgeomengine
-    GIT_TAG test
+    GIT_TAG main
 )
 
 FetchContent_MakeAvailable(diffgeomeng)
