@@ -7,7 +7,7 @@ class PhysicsEngine{
 public:
     PhysicsEngine(std::vector<Body*> bodies, SpaceTime* spaceTime);
 
-    void update(double dt);
+    void update(double dt, bool isUsingGeodesicRHS = true);
     float getSelfTimeOfBody(int i);
 private:
     std::vector<Body*> bodies;

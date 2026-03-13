@@ -1,6 +1,8 @@
 #include<kinematics/physicsEngine.hpp>
 #include<iostream>
 #include<constans.h>
+#include<diffgeomeng/classes/compute/rk4_realize.hpp>
+#include<GR/SpaceTime/Metrices/GRMetric.hpp>
 
 PhysicsEngine::PhysicsEngine(std::vector<Body*> bodies, SpaceTime* spaceTime){
     this->bodies = bodies;
@@ -17,17 +19,24 @@ PhysicsEngine::PhysicsEngine(std::vector<Body*> bodies, SpaceTime* spaceTime){
 }
 
 // JJTODO СДЕЛАТЬ МАЛЕНЬКИЕ ПРИКОЛЬЧИКИ ДЛЯ НУЛЛ ГЕОДЕЗИКОВ ФОТОНЧИКАВА !! ^^
-void PhysicsEngine::update(double dt){
+void PhysicsEngine::update(double dt, bool isUsingGeodesicRHS){
     std::cout << "update" << std::endl;
 
     Manifold* manifold = this->spaceTime->getManifold();
     Geodesic* geodesic = manifold->getGeodesic();
+    Metric* metric = manifold->getMetric();
     double newTime = this->time + dt;
+
+    GRMetric* grMetric = dynamic_cast<GRMetric*>(metric);
+
+    if (!grMetric) {
+        std::cerr << "Metric of SpaceTime is not a GRMetric!" << std::endl;
+    }
 
     for (Body* body : bodies){
         State* state = body->getState();
 
-        std::cout << manifold->getMetric()->getInvariant(*state) << std::endl;
+        std::cout << metric->getInvariant(*state) << std::endl;
 
         double dtau = std::max(dt / state->v0[0], 1e-7);
 
@@ -53,13 +62,21 @@ void PhysicsEngine::update(double dt){
         if (fabs(state->v0[0]) < 1e-12)
             throw "OBJECT MOVE'S SO SLOWLY IN SPACE--TIME!!!1";
 
-        *state = geodesic->computeGeodesicNextState(
-            dtau,
-            *state,
-            0.002,
-            zero,
-            true
-        );
+        if(isUsingGeodesicRHS){
+            *state = geodesic->computeGeodesicNextState(
+                dtau,
+                *state,
+                0.002,
+                zero,
+                true
+            );
+        }else{
+            grMetric->computeIntegralParams(*state);
+            *state = computeRK4(dtau, [grMetric](double t, State state) {
+                return grMetric->MetricFirstIntegralRhs(t, state, 1, zero, true);
+            }, *state, 0.002);
+        }
+        
 
         body->setState(state);
         body->setSelfTime(body->getSelfTime() + dtau);

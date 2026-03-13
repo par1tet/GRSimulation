@@ -10,6 +10,7 @@ add_executable(grSim
     src/GR/camera.cpp
     src/GR/SpaceTime/spaceTime.cpp
     src/GR/SpaceTime/Metrices/SchwarzschildMetric.cpp
+    src/GR/SpaceTime/Metrices/GRMetric.cpp
     src/GR/SpaceTime/Embeddings/SchwarzchildEmbedding.cpp
 )
 
