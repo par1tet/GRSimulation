@@ -30,3 +30,7 @@ void Body::setSelfTime(float newSelfTime){
 float Body::getSelfTime(){
     return this->selftime;
 }
+
+float Body::getRadius(){
+    return this->radius;
+}

@@ -1,18 +1,28 @@
 #include<GR/rayTracing/rayTracingFromObserver.hpp>
 #include<cmath>
+#include<iostream>
 
-RayTracingFromObserver::RayTracingFromObserver(Observer* obs, int width, int height, float FOV){
+RayTracingFromObserver::RayTracingFromObserver(Observer* obs, std::vector<Body*> bodies, int width, int height, float FOV){
     this->observer = obs;
     this->width = width;
     this->height = height;
     this->FOV = FOV;
+    this->bodies = bodies;
 }
 
 void RayTracingFromObserver::renderPixels(){
     Tetrad tetrad = this->observer->getTetrad();
 
     Manifold* manifold = this->observer->getManifold();
+    Metric* metric = manifold->getMetric();
     std::vector<double> obsPos = (this->observer->getBody()->getState()->x0);
+
+    GRMetric* grMetric = dynamic_cast<GRMetric*>(metric);
+
+    if(!grMetric){
+        std::cerr << "Metric for manifold must be grMetric" << std::endl;
+    }
+
 
     double eps = 1e-6;
 
@@ -42,9 +52,10 @@ void RayTracingFromObserver::renderPixels(){
             rayStartPos[2] += eps * kVel[2];
             rayStartPos[3] += eps * kVel[3];
 
-            Ray ray = Ray(State(rayStartPos, std::vector<double>{kVel[0], kVel[1], kVel[2], kVel[3]}, 4));
+            Ray ray = Ray(new State(rayStartPos, std::vector<double>{kVel[0], kVel[1], kVel[2], kVel[3]}, 4), manifold);
 
-            ray.integrateRay(10);
+            std::cout << "start render ray at pixel: (" << px << ", " << py << ")" << std::endl;
+            ray.integrateRay(5, grMetric, manifold, bodies, false);
 
             this->pixelsBuffer.push_back(ray.getPixel());
         }
