@@ -12,6 +12,9 @@ add_executable(grSim
     src/GR/SpaceTime/Metrices/SchwarzschildMetric.cpp
     src/GR/SpaceTime/Metrices/GRMetric.cpp
     src/GR/SpaceTime/Embeddings/SchwarzchildEmbedding.cpp
+    src/GR/rayTracing/rayTracingFromObserver.cpp
+    src/GR/rayTracing/ray.cpp
+    src/GR/observer.cpp
 )
 
 include(FetchContent)

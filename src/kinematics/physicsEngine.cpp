@@ -20,8 +20,6 @@ PhysicsEngine::PhysicsEngine(std::vector<Body*> bodies, SpaceTime* spaceTime){
 
 // JJTODO СДЕЛАТЬ МАЛЕНЬКИЕ ПРИКОЛЬЧИКИ ДЛЯ НУЛЛ ГЕОДЕЗИКОВ ФОТОНЧИКАВА !! ^^
 void PhysicsEngine::update(double dt, bool isUsingGeodesicRHS){
-    std::cout << "update" << std::endl;
-
     Manifold* manifold = this->spaceTime->getManifold();
     Geodesic* geodesic = manifold->getGeodesic();
     Metric* metric = manifold->getMetric();
@@ -40,13 +38,15 @@ void PhysicsEngine::update(double dt, bool isUsingGeodesicRHS){
 
         double dtau = std::max(dt / state->v0[0], 1e-7);
 
-        for(int k=0;k<4;k++)
-        for(int i=0;i<4;i++)
-        for(int j=0;j<4;j++)
-        {
-            double g = manifold->getGeodesic()->getChristoffelSymbols()->computeChristoffelSybmbolsAtPoint(state->x0,k,i,j);
-            if(abs(g) > 1e-6)
-                std::cout << "Γ_{" << k << i << j << "} = " << g << std::endl;
+        if(!true){
+            for(int k=0;k<4;k++)
+            for(int i=0;i<4;i++)
+            for(int j=0;j<4;j++)
+            {
+                double g = manifold->getGeodesic()->getChristoffelSymbols()->computeChristoffelSybmbolsAtPoint(state->x0,k,i,j);
+                if(abs(g) > 1e-6)
+                    std::cout << "Γ_{" << k << i << j << "} = " << g << std::endl;
+            }
         }
 
         double ar = 0;
@@ -68,12 +68,12 @@ void PhysicsEngine::update(double dt, bool isUsingGeodesicRHS){
                 *state,
                 0.002,
                 zero,
-                true
+                false
             );
         }else{
             grMetric->computeIntegralParams(*state);
             *state = computeRK4(dtau, [grMetric](double t, State state) {
-                return grMetric->MetricFirstIntegralRhs(t, state, 1, zero, true);
+                return grMetric->MetricFirstIntegralRhs(t, state, 1, zero, false);
             }, *state, 0.002);
         }
         
