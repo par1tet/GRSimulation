@@ -6,11 +6,13 @@
 
 class RayTracingFromObserver{
 public:
-    RayTracingFromObserver(Observer, int width, int height);
+    RayTracingFromObserver(Observer*, int width, int height, float FOV);
 
     void renderPixels();
     std::vector<Pixel> getPixelsBuffer();
 private:
     std::vector<Pixel> pixelsBuffer;
-    Observer* currentObserver;
+    Observer* observer;
+    int width, height;
+    float FOV;
 };

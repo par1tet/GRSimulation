@@ -4,6 +4,7 @@
 #include<GR/camera.hpp>
 #include<GR/SpaceTime/Metrices/GRMetric.hpp>
 #include<kinematics/body.hpp>
+#include<diffgeomeng/classes/diff/Manifold.hpp>
 
 struct Tetrad{
     glm::mat4 e;
@@ -11,7 +12,7 @@ struct Tetrad{
 
 class Observer{
 public:
-    Observer(GLFWwindow* window, Camera*, State*, Metric*);
+    Observer(GLFWwindow* window, Camera*, State*, Manifold*);
 
     void createTetrad();
     void update();
@@ -21,10 +22,13 @@ public:
     Body* getBody();
     Camera* getCamera();
     Tetrad getTetrad();
+    GRMetric* getGRMetric();
+    Manifold* getManifold();
+
 private:
     bool keys[255]{false};
     Camera* camera;
     Body* body;
-    Metric* metric;
+    Manifold* manifold;
     Tetrad tetrad;
 };

@@ -9,7 +9,7 @@ class Ray{
 public:
     Ray(State);
     Pixel getPixel();
-    void IntegrateRay();
+    void integrateRay(double time);
 
 private:
     State state;

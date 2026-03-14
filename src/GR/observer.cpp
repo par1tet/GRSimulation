@@ -3,10 +3,10 @@
 #include<iostream>
 #include<constans.h>
 
-Observer::Observer(GLFWwindow* window, Camera* camera, State* state, Metric* metric){
+Observer::Observer(GLFWwindow* window, Camera* camera, State* state, Manifold* manifold){
     checkCorrectState(*state);
 
-    this->metric = metric;
+    this->manifold = manifold;
     this->camera = camera;
     this->body = new Body(state, glm::vec4{0}, 0, 0);
 
@@ -47,7 +47,6 @@ void Observer::update(){
     glm::vec3 localSpeed{0};
     glm::vec3 camDir = this->camera->getDirection();
     glm::vec3 upVector = this->camera->getUpVector();
-    Tetrad tetrad = this->tetrad;
 
     if(this->keys['W']){
         std::cout << "logW" << std::endl;
@@ -85,4 +84,18 @@ Tetrad Observer::getTetrad(){
 
 Camera* Observer::getCamera(){
     return this->camera;
+}
+
+GRMetric* Observer::getGRMetric(){
+    GRMetric* grMetric = dynamic_cast<GRMetric*>(this->manifold->getMetric());
+
+    if(grMetric){
+        return grMetric;
+    }else{
+        std::cerr << "Metric for manifold must be GRMetric";
+    }
+}
+
+Manifold* Observer::getManifold(){
+    return this->manifold;
 }
