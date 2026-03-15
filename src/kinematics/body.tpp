@@ -1,10 +1,3 @@
-#include<kinematics/body.hpp>
-#include<iostream>
-#include<constans.h>
-#include<math.h>
-#include<diffgeomeng/classes/diff/Manifold.hpp>
-#include<diffgeomeng/utility/functions.hpp>
-
 template <size_t N>
 Body<N>::Body(State<N> *state, glm::vec4 force, float radius, unsigned long long mass){
     checkCorrectState(*state);

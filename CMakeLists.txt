@@ -5,12 +5,8 @@ add_executable(grSim
     src/main.cpp
     src/utils/shader_utils.cpp
     src/mesh/sphereMesh.cpp
-    src/kinematics/body.cpp
-    src/kinematics/physicsEngine.cpp
     src/GR/camera.cpp
-    src/GR/SpaceTime/spaceTime.cpp
     src/GR/SpaceTime/Metrices/SchwarzschildMetric.cpp
-    src/GR/SpaceTime/Metrices/GRMetric.cpp
     src/GR/SpaceTime/Embeddings/SchwarzchildEmbedding.cpp
     src/GR/rayTracing/rayTracingFromObserver.cpp
     src/GR/rayTracing/ray.cpp
@@ -37,7 +33,10 @@ target_include_directories(glad PUBLIC libs/glad/include)
 
 target_include_directories(grSim PRIVATE
     ${CMAKE_SOURCE_DIR}/core
+
+    ${CMAKE_SOURCE_DIR}
 )
+
 
 target_include_directories(grSim PRIVATE  
     ${soil2_SOURCE_DIR}/src  

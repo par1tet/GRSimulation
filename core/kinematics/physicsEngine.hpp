@@ -2,6 +2,10 @@
 
 #include<kinematics/body.hpp>
 #include<GR/SpaceTime/spaceTime.hpp>
+#include<iostream>
+#include<constans.h>
+#include<diffgeomeng/classes/compute/rk4_realize.hpp>
+#include<GR/SpaceTime/Metrices/GRMetric.hpp>
 
 template<size_t N>
 class PhysicsEngine{
@@ -16,3 +20,5 @@ private:
     
     float time;
 };
+
+#include<src/kinematics/physicsEngine.tpp>

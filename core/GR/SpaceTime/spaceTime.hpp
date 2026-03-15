@@ -12,3 +12,5 @@ public:
 private:
     Manifold<N>* manifold;
 };
+
+#include<src/GR/SpaceTime/spaceTime.tpp>

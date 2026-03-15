@@ -1,9 +1,3 @@
-#include<kinematics/physicsEngine.hpp>
-#include<iostream>
-#include<constans.h>
-#include<diffgeomeng/classes/compute/rk4_realize.hpp>
-#include<GR/SpaceTime/Metrices/GRMetric.hpp>
-
 template <size_t N>
 PhysicsEngine<N>::PhysicsEngine(std::vector<Body<N>*> bodies, SpaceTime<N>* spaceTime){
     this->bodies = bodies;
@@ -41,9 +35,9 @@ void PhysicsEngine<N>::update(double dt, bool isUsingGeodesicRHS){
         double dtau = std::max(dt / state->v0[0], 1e-7);
 
         if(!true){
-            for(int k=0;k<4;k++)
-            for(int i=0;i<4;i++)
-            for(int j=0;j<4;j++)
+            for(int k=0;k<N;k++)
+            for(int i=0;i<N;i++)
+            for(int j=0;j<N;j++)
             {
                 double g = manifold->getGeodesic()->getChristoffelSymbols()->computeChristoffelSybmbolsAtPoint(state->x0,k,i,j);
                 if(abs(g) > 1e-6)
@@ -53,8 +47,8 @@ void PhysicsEngine<N>::update(double dt, bool isUsingGeodesicRHS){
 
         double ar = 0;
 
-        for(int a=0;a<4;a++)
-        for(int b=0;b<4;b++){
+        for(int a=0;a<N;a++)
+        for(int b=0;b<N;b++){
             double g = manifold->getGeodesic()->getChristoffelSymbols()->computeChristoffelSybmbolsAtPoint(state->x0,1,a,b);
             ar -= g * state->v0[a] * state->v0[b];
         }
@@ -65,7 +59,7 @@ void PhysicsEngine<N>::update(double dt, bool isUsingGeodesicRHS){
             throw "OBJECT MOVE'S SO SLOWLY IN SPACE--TIME!!!1";
 
         if(isUsingGeodesicRHS){
-            *state = geodesic->computeGeodesicNextState(
+            *state = geodesic->computeGeodesicNextState (
                 dtau,
                 *state,
                 0.002,
@@ -74,7 +68,7 @@ void PhysicsEngine<N>::update(double dt, bool isUsingGeodesicRHS){
             );
         }else{
             grMetric->computeIntegralParams(*state);
-            *state = computeRK4(dtau, [grMetric](double t, State<N> state) {
+            *state = computeRK4<N>(dtau, [grMetric](double t, State<N> state) {
                 return grMetric->MetricFirstIntegralRhs(t, state, 1, zeroVectorField<4>(), false);
             }, *state, 0.002);
         }

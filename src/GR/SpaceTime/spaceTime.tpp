@@ -1,5 +1,3 @@
-#include<GR/SpaceTime/spaceTime.hpp>
-
 template<size_t N>
 SpaceTime<N>::SpaceTime(Metric<N>* metric){
     this->manifold = new Manifold<N>(metric);

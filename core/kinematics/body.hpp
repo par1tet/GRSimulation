@@ -2,6 +2,11 @@
 #include<glm/glm.hpp>
 #include<vector>
 #include<diffgeomeng/utility/types.hpp>
+#include<iostream>
+#include<constans.h>
+#include<math.h>
+#include<diffgeomeng/classes/diff/Manifold.hpp>
+#include<diffgeomeng/utility/functions.hpp>
 
 #pragma once
 
@@ -23,3 +28,5 @@ private:
     unsigned long long mass; 
     float selftime;
 };
+
+#include<src/kinematics/body.tpp>

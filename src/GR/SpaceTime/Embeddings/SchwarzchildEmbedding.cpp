@@ -7,8 +7,6 @@ double embeddingZ(double r, double mass){
     return 2*sqrt(rs*(r-rs));
 }
 
-
-
 Embedding<4> SchwarzchildEmbedding(double mass){
     return Embedding<4>([mass](Point<4> x){
         Point<4> x_dec;
