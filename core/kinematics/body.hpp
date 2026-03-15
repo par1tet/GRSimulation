@@ -5,19 +5,20 @@
 
 #pragma once
 
+template <size_t N>
 class Body {
 public:
-    Body(State* state, glm::vec4 force, float radius, unsigned long long mass);
+    Body(State<N>* state, glm::vec4 force, float radius, unsigned long long mass);
 
-    State* getState();
-    void setState(State* state);
+    State<N>* getState();
+    void setState(State<N>* state);
     float getSelfTime();
     void setSelfTime(float time);
     float getRadius();
 
 private:
     glm::vec4 force;
-    State* state;
+    State<N>* state;
     float radius;
     unsigned long long mass; 
     float selftime;

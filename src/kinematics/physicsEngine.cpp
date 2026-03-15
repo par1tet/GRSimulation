@@ -4,35 +4,37 @@
 #include<diffgeomeng/classes/compute/rk4_realize.hpp>
 #include<GR/SpaceTime/Metrices/GRMetric.hpp>
 
-PhysicsEngine::PhysicsEngine(std::vector<Body*> bodies, SpaceTime* spaceTime){
+template <size_t N>
+PhysicsEngine<N>::PhysicsEngine(std::vector<Body<N>*> bodies, SpaceTime<N>* spaceTime){
     this->bodies = bodies;
     this->time = 0;
     this->spaceTime = spaceTime;
 
-    Manifold* manifold = this->spaceTime->getManifold();
+    Manifold<N>* manifold = this->spaceTime->getManifold();
 
-    for (Body* body : bodies){
-        State* state = body->getState();
+    for (Body<N>* body : bodies){
+        State<N>* state = body->getState();
         *state = manifold->normalizeVelocity(*state, 1);
         body->setState(state);
     }
 }
 
+template <size_t N>
 // JJTODO СДЕЛАТЬ МАЛЕНЬКИЕ ПРИКОЛЬЧИКИ ДЛЯ НУЛЛ ГЕОДЕЗИКОВ ФОТОНЧИКАВА !! ^^
-void PhysicsEngine::update(double dt, bool isUsingGeodesicRHS){
-    Manifold* manifold = this->spaceTime->getManifold();
-    Geodesic* geodesic = manifold->getGeodesic();
-    Metric* metric = manifold->getMetric();
+void PhysicsEngine<N>::update(double dt, bool isUsingGeodesicRHS){
+    Manifold<N>* manifold = this->spaceTime->getManifold();
+    Geodesic<N>* geodesic = manifold->getGeodesic();
+    Metric<N>* metric = manifold->getMetric();
     double newTime = this->time + dt;
 
-    GRMetric* grMetric = dynamic_cast<GRMetric*>(metric);
+    GRMetric<N>* grMetric = dynamic_cast<GRMetric<N>*>(metric);
 
     if (!grMetric) {
         std::cerr << "Metric of SpaceTime is not a GRMetric!" << std::endl;
     }
 
-    for (Body* body : bodies){
-        State* state = body->getState();
+    for (Body<N>* body : bodies){
+        State<N>* state = body->getState();
 
         std::cout << metric->getInvariant(*state) << std::endl;
 
@@ -67,13 +69,13 @@ void PhysicsEngine::update(double dt, bool isUsingGeodesicRHS){
                 dtau,
                 *state,
                 0.002,
-                zero,
+                zeroVectorField<4>(),
                 false
             );
         }else{
             grMetric->computeIntegralParams(*state);
-            *state = computeRK4(dtau, [grMetric](double t, State state) {
-                return grMetric->MetricFirstIntegralRhs(t, state, 1, zero, false);
+            *state = computeRK4(dtau, [grMetric](double t, State<N> state) {
+                return grMetric->MetricFirstIntegralRhs(t, state, 1, zeroVectorField<4>(), false);
             }, *state, 0.002);
         }
         

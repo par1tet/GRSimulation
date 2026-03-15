@@ -1,14 +1,16 @@
 #pragma once
 
 #include<diffgeomeng/classes/diff/Metric.hpp>
+#include<GR/types.h>
 
-class GRMetric : public Metric {
+template <size_t N>
+class GRMetric : public Metric<N> {
 public:
-    GRMetric(Components components): Metric(components){};
-    GRMetric(std::vector<std::function<double(const std::vector<double>&)>> components): Metric(components){};
+    GRMetric(Components<N> components): Metric<N>(components){};
+    GRMetric(ComponentsRowType<N> components): Metric<N>(components){};
 
-    virtual State MetricFirstIntegralRhs(double time, State& initState, double kappa,
-         std::function<std::vector<double>(std::vector<double>)> force = zero, bool isLogging = false){};
+    virtual State<N> MetricFirstIntegralRhs(double time, State<N>& initState, double kappa,
+         VectorField<N> force = zeroVectorField<N>(), bool isLogging = false){};
 
-    virtual void computeIntegralParams(State){};
+    virtual void computeIntegralParams(State<N>){};
 };

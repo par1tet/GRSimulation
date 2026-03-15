@@ -9,18 +9,17 @@ double embeddingZ(double r, double mass){
 
 
 
-Embedding SchwarzchildEmbedding(double mass){
-    return [mass](std::vector<double> x){
-        int n = x.size();
-        std::vector<double> x_dec(n, 0);
+Embedding<4> SchwarzchildEmbedding(double mass){
+    return Embedding<4>([mass](Point<4> x){
+        Point<4> x_dec;
 
-        double r = x[1];
-        double phi = x[3];
+        double r = x.x[1];
+        double phi = x.x[3];
 
-        x_dec[1] = r * cos(phi);
-        x_dec[2] = r * sin(phi);
-        x_dec[3] = embeddingZ(r, mass);
+        x_dec.x[1] = r * cos(phi);
+        x_dec.x[2] = r * sin(phi);
+        x_dec.x[3] = embeddingZ(r, mass);
 
         return x_dec;
-    };
+    });
 }

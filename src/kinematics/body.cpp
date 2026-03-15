@@ -5,7 +5,8 @@
 #include<diffgeomeng/classes/diff/Manifold.hpp>
 #include<diffgeomeng/utility/functions.hpp>
 
-Body::Body(State *state, glm::vec4 force, float radius, unsigned long long mass){
+template <size_t N>
+Body<N>::Body(State<N> *state, glm::vec4 force, float radius, unsigned long long mass){
     checkCorrectState(*state);
 
     this->state = state;
@@ -15,22 +16,27 @@ Body::Body(State *state, glm::vec4 force, float radius, unsigned long long mass)
     this->selftime = 0;
 }
 
-State* Body::getState(){
+template <size_t N>
+State<N>* Body<N>::getState(){
     return this->state;
 }
 
-void Body::setState(State* state){
+template <size_t N>
+void Body<N>::setState(State<N>* state){
     this->state = state;
 }
 
-void Body::setSelfTime(float newSelfTime){
+template <size_t N>
+void Body<N>::setSelfTime(float newSelfTime){
     this->selftime = newSelfTime;
 }
 
-float Body::getSelfTime(){
+template <size_t N>
+float Body<N>::getSelfTime(){
     return this->selftime;
 }
 
-float Body::getRadius(){
+template <size_t N>
+float Body<N>::getRadius(){
     return this->radius;
 }

@@ -2,7 +2,7 @@
 #include<cmath>
 #include<iostream>
 
-RayTracingFromObserver::RayTracingFromObserver(Observer* obs, std::vector<Body*> bodies, int width, int height, float FOV){
+RayTracingFromObserver::RayTracingFromObserver(Observer* obs, std::vector<Body<4>*> bodies, int width, int height, float FOV){
     this->observer = obs;
     this->width = width;
     this->height = height;
@@ -13,11 +13,11 @@ RayTracingFromObserver::RayTracingFromObserver(Observer* obs, std::vector<Body*>
 void RayTracingFromObserver::renderPixels(){
     Tetrad tetrad = this->observer->getTetrad();
 
-    Manifold* manifold = this->observer->getManifold();
-    Metric* metric = manifold->getMetric();
-    std::vector<double> obsPos = (this->observer->getBody()->getState()->x0);
+    Manifold<4>* manifold = this->observer->getManifold();
+    Metric<4>* metric = manifold->getMetric();
+    Point<4> obsPos = (this->observer->getBody()->getState()->x0);
 
-    GRMetric* grMetric = dynamic_cast<GRMetric*>(metric);
+    GRMetric<4>* grMetric = dynamic_cast<GRMetric<4>*>(metric);
 
     if(!grMetric){
         std::cerr << "Metric for manifold must be grMetric" << std::endl;
@@ -46,13 +46,13 @@ void RayTracingFromObserver::renderPixels(){
 
             glm::vec4 kVel = tetrad.e * localPhotonDir;
 
-            std::vector<double> rayStartPos = obsPos;
+            Point<4> rayStartPos = obsPos;
 
-            rayStartPos[1] += eps * kVel[1];
-            rayStartPos[2] += eps * kVel[2];
-            rayStartPos[3] += eps * kVel[3];
+            rayStartPos.x[1] += eps * kVel[1];
+            rayStartPos.x[2] += eps * kVel[2];
+            rayStartPos.x[3] += eps * kVel[3];
 
-            Ray ray = Ray(new State(rayStartPos, std::vector<double>{kVel[0], kVel[1], kVel[2], kVel[3]}, 4), manifold);
+            Ray ray = Ray(new State<4>(rayStartPos.x, std::array<double, 4>{kVel[0], kVel[1], kVel[2], kVel[3]}), manifold);
 
             std::cout << "start render ray at pixel: (" << px << ", " << py << ")" << std::endl;
             ray.integrateRay(5, grMetric, manifold, bodies, false);

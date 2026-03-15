@@ -1,6 +1,7 @@
 #pragma once
 
 #include<GR/SpaceTime/Metrices/GRMetric.hpp>
+#include<diffgeomeng/utility/types.hpp>
 
 struct ParamSchwarz {
     double mass;
@@ -10,18 +11,18 @@ struct IntegrateParamsSchwarz {
     double L;
 };
 
-class SchwarzschildMetric : public GRMetric {
+class SchwarzschildMetric : public GRMetric<4> {
 public:
     SchwarzschildMetric(double mass);
 
     ParamSchwarz getParams();
 
-    State MetricFirstIntegralRhs(double time, State& initState, double kappa,
-         std::function<std::vector<double>(std::vector<double>)> force = zero, bool isLogging = false);
+    State<4> MetricFirstIntegralRhs(double time, State<4>& initState, double kappa,
+         VectorField<4> force = zeroVectorField<4>(), bool isLogging = false);
 
-    void computeIntegralParams(State);
+    void computeIntegralParams(State<4>);
 
-    void updateParams(State);
+    void updateParams(State<4>);
 private:
     ParamSchwarz params;
     IntegrateParamsSchwarz integrateParamsScharz;

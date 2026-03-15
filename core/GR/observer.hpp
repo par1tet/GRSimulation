@@ -12,23 +12,23 @@ struct Tetrad{
 
 class Observer{
 public:
-    Observer(GLFWwindow* window, Camera*, State*, Manifold*);
+    Observer(GLFWwindow* window, Camera*, State<4>*, Manifold<4>*);
 
     void createTetrad();
     void update();
     static void keyCallbackDispatcher(GLFWwindow* window, int key, int scancode, int action, int mods);
     void moveHandler(int key, int action);
     glm::vec4 getLocalSpeed();
-    Body* getBody();
+    Body<4>* getBody();
     Camera* getCamera();
     Tetrad getTetrad();
-    GRMetric* getGRMetric();
-    Manifold* getManifold();
+    GRMetric<4>* getGRMetric();
+    Manifold<4>* getManifold();
 
 private:
     bool keys[255]{false};
     Camera* camera;
-    Body* body;
-    Manifold* manifold;
+    Body<4>* body;
+    Manifold<4>* manifold;
     Tetrad tetrad;
 };

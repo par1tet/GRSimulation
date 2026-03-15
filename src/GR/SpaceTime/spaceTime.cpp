@@ -1,13 +1,16 @@
 #include<GR/SpaceTime/spaceTime.hpp>
 
-SpaceTime::SpaceTime(Metric* metric){
-    this->manifold = new Manifold(metric);
+template<size_t N>
+SpaceTime<N>::SpaceTime(Metric<N>* metric){
+    this->manifold = new Manifold<N>(metric);
 }
 
-SpaceTime::SpaceTime(Metric* metric, Embedding emb){
-    this->manifold = new Manifold(metric, emb);
+template<size_t N>
+SpaceTime<N>::SpaceTime(Metric<N>* metric, Embedding<N> emb){
+    this->manifold = new Manifold<N>(metric, emb);
 }
 
-Manifold* SpaceTime::getManifold(){
+template<size_t N>
+Manifold<N>* SpaceTime<N>::getManifold(){
     return this->manifold;
 }

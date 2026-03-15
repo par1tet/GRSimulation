@@ -2,4 +2,4 @@
 
 #include<diffgeomeng/utility/types.hpp>
 
-Embedding SchwarzchildEmbedding(double mass);
+Embedding<4> SchwarzchildEmbedding(double mass);

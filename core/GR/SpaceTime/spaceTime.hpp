@@ -2,12 +2,13 @@
 
 #include<diffgeomeng/classes/diff/Manifold.hpp>
 
+template <size_t N>
 class SpaceTime{
 public:
-    SpaceTime(Metric*);
-    SpaceTime(Metric*, Embedding);
+    SpaceTime(Metric<N>*);
+    SpaceTime(Metric<N>*, Embedding<N>);
 
-    Manifold* getManifold();
+    Manifold<N>* getManifold();
 private:
-    Manifold* manifold;
+    Manifold<N>* manifold;
 };
