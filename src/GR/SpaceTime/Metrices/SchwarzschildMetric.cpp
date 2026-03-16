@@ -40,22 +40,30 @@ ParamSchwarz SchwarzschildMetric::getParams(){
     return this->params;
 }
 
-State<4> SchwarzschildMetric::MetricFirstIntegralRhs(double time, State<4>& initState, double kappa,
+inline State<4> SchwarzschildMetric::MetricFirstIntegralRhs(double time, State<4>& initState, double kappa,
          VectorField<4> force, bool isLogging){
     double x_t = initState.x0[0], x_r = initState.x0[1], x_theta = initState.x0[2], x_phi = initState.x0[3];
     double u_t = initState.v0[0], u_r = initState.v0[1], u_theta = initState.v0[2], u_phi = initState.v0[3];
 
-    double M = this->params.mass;
-    double E = this->integrateParamsScharz.E;
-    double L = this->integrateParamsScharz.L;
+    const double M = this->params.mass;
+    const double E = this->integrateParamsScharz.E;
+    const double L = this->integrateParamsScharz.L;
 
-    double f = 1.0 - 2*M/x_r;
-    double dVdr =
-        (2*M/(x_r*x_r))*(kappa + L*L/(x_r*x_r))
-        - f*(2*L*L/(x_r*x_r*x_r));
-    double s = sin(x_theta);
+    const double inv_r = 1.0 / x_r;
+    const double inv_r2 = inv_r * inv_r;
+    const double inv_r3 = inv_r2 * inv_r;
 
-    State<4> newState;
+    const double L2 = L * L;
+
+    const double f = 1.0 - 2.0*M*inv_r;
+    const double inv_f = 1.0 / f;
+    const double inv_f2 = inv_f * inv_f;
+
+    const double dVdr =
+        (2.0*M*inv_r2)*(kappa + L2*inv_r2)
+        - f*(2.0*L2*inv_r3);
+
+    State<4> newState{};
 
     if(isLogging){
         std::cout << "<-----Positioin----->" << std::endl;
@@ -71,17 +79,15 @@ State<4> SchwarzschildMetric::MetricFirstIntegralRhs(double time, State<4>& init
         }
     }
  
-    newState.x0[0] = E / f;        // dt/dτ
+    newState.x0[0] = E * inv_f;        // dt/dτ
     newState.x0[1] = u_r;          // dr/dτ
     newState.x0[2] = u_theta;      // dθ/dτ
-    newState.x0[3] = L/(x_r*x_r);  // dφ/dτ
+    newState.x0[3] = L * inv_r2;  // dφ/dτ
 
-    newState.v0[0] = -(2.0*M*E)/(x_r*x_r*f*f) * u_r;  // d²t/dτ²
+    newState.v0[0] = -(2.0*M*E)*inv_r2*inv_f2 * u_r;  // d²t/dτ²
     newState.v0[1] = -0.5 * dVdr;                     // d²r/dτ²
     newState.v0[2] = 0.0;                             // θ motion (plane)
-    newState.v0[3] = -(2.0*L)/(x_r*x_r*x_r) * u_r;    // d²φ/dτ²
-
-    return newState;
+    newState.v0[3] = -(2.0*L)*(inv_r3) * u_r;    // d²φ/dτ²
 
     return newState;
 }

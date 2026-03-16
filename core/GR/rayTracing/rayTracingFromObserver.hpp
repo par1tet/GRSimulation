@@ -4,17 +4,21 @@
 #include<GR/rayTracing/ray.hpp>
 #include<GR/observer.hpp>
 #include<kinematics/body.hpp>
+#include<cmath>
+#include<iostream>
 
+template <int width, int height>
 class RayTracingFromObserver{
 public:
-    RayTracingFromObserver(Observer*, std::vector<Body<4>*> bodies, int width, int height, float FOV);
+    RayTracingFromObserver(Observer*, std::vector<Body<4>*> bodies, float FOV);
 
     void renderPixels();
-    std::vector<Pixel> getPixelsBuffer();
+    std::array<Pixel, width*height> getPixelsBuffer();
 private:
-    std::vector<Pixel> pixelsBuffer;
+    std::array<Pixel, width*height> pixelsBuffer;
     Observer* observer;
     std::vector<Body<4>*> bodies;
-    int width, height;
     float FOV;
 };
+
+#include<src/GR/rayTracing/rayTracingFromObserver.tpp>

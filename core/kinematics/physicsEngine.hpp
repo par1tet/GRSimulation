@@ -10,7 +10,7 @@
 template<size_t N>
 class PhysicsEngine{
 public:
-    PhysicsEngine(std::vector<Body<N>*> bodies, SpaceTime<N>* spaceTime);
+    PhysicsEngine(const std::vector<Body<N>*>& bodies, SpaceTime<N>* spaceTime);
 
     void update(double dt, bool isUsingGeodesicRHS = true);
     float getSelfTimeOfBody(int i);

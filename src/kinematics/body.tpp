@@ -30,6 +30,6 @@ float Body<N>::getSelfTime(){
 }
 
 template <size_t N>
-float Body<N>::getRadius(){
+float Body<N>::getRadius() const{
     return this->radius;
 }

@@ -8,10 +8,17 @@ add_executable(grSim
     src/GR/camera.cpp
     src/GR/SpaceTime/Metrices/SchwarzschildMetric.cpp
     src/GR/SpaceTime/Embeddings/SchwarzchildEmbedding.cpp
-    src/GR/rayTracing/rayTracingFromObserver.cpp
     src/GR/rayTracing/ray.cpp
     src/GR/observer.cpp
 )
+
+target_compile_options(grSim PRIVATE
+    -O3
+    -march=native
+    -ffast-math
+)
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp")
 
 include(FetchContent)
 FetchContent_Declare(soil2  

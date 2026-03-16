@@ -1,20 +1,38 @@
 template <size_t N>
-PhysicsEngine<N>::PhysicsEngine(std::vector<Body<N>*> bodies, SpaceTime<N>* spaceTime){
-    this->bodies = bodies;
-    this->time = 0;
+PhysicsEngine<N>::PhysicsEngine(const std::vector<Body<N>*>& bodies, SpaceTime<N>* spaceTime){
     this->spaceTime = spaceTime;
-
-    Manifold<N>* manifold = this->spaceTime->getManifold();
+    this->bodies = bodies;
 
     for (Body<N>* body : bodies){
         State<N>* state = body->getState();
-        *state = manifold->normalizeVelocity(*state, 1);
+        std::cout << state->v0[0] << std::endl;
+
+        auto g = this->spaceTime->getManifold()->getMetric()->getMatrixAtPoint(state->x0);
+
+        for(int i=0;i<N;i++)
+            for(int j=0;j<N;j++)
+                std::cout << "g_" << i << j << " = " << g[i][j] << std::endl;
+    }    
+
+
+
+    for (Body<N>* body : this->bodies){
+        State<N>* state = body->getState();
+
+        std::cout << state->v0[0] << std::endl;
+
+        *state = this->spaceTime->getManifold()->normalizeVelocity(*state, 1);
+
+        std::cout << state->v0[0] << std::endl;
+
         body->setState(state);
-    }
+    }    
+
+    this->time = 0;
 }
 
-template <size_t N>
 // JJTODO СДЕЛАТЬ МАЛЕНЬКИЕ ПРИКОЛЬЧИКИ ДЛЯ НУЛЛ ГЕОДЕЗИКОВ ФОТОНЧИКАВА !! ^^
+template <size_t N>
 void PhysicsEngine<N>::update(double dt, bool isUsingGeodesicRHS){
     Manifold<N>* manifold = this->spaceTime->getManifold();
     Geodesic<N>* geodesic = manifold->getGeodesic();
@@ -23,16 +41,31 @@ void PhysicsEngine<N>::update(double dt, bool isUsingGeodesicRHS){
 
     GRMetric<N>* grMetric = dynamic_cast<GRMetric<N>*>(metric);
 
+    std::cout << grMetric <<std::endl;
+
     if (!grMetric) {
         std::cerr << "Metric of SpaceTime is not a GRMetric!" << std::endl;
     }
 
-    for (Body<N>* body : bodies){
+    for (Body<N>* body : this->bodies){
         State<N>* state = body->getState();
+
+        std::cout << state->v0[0] << std::endl;
 
         std::cout << metric->getInvariant(*state) << std::endl;
 
+        auto g = metric->getMatrixAtPoint(state->x0);
+        std::cout << "g_00: " << g[0][0] << std::endl;
+
+
+        std::cout << state->v0[0] << std::endl;
+
+        std::cout << state->v0[1] << std::endl;
+        std::cout << state->v0[2] << std::endl;
+        std::cout << state->v0[3] << std::endl;
+
         double dtau = std::max(dt / state->v0[0], 1e-7);
+
 
         if(!true){
             for(int k=0;k<N;k++)

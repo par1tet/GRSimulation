@@ -19,7 +19,7 @@ public:
     void setState(State<N>* state);
     float getSelfTime();
     void setSelfTime(float time);
-    float getRadius();
+    float getRadius() const;
 
 private:
     glm::vec4 force;
