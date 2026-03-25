@@ -19,6 +19,7 @@ private:
     Observer* observer;
     std::vector<Body<4>*> bodies;
     float FOV;
+    std::array<glm::vec3, width*height> photonDirs;
 };
 
 #include<src/GR/rayTracing/rayTracingFromObserver.tpp>

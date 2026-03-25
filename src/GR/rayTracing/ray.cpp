@@ -14,6 +14,25 @@ Pixel computeSkyRay(State<4>* state){
     return glm::vec3{0, 0.08, 0.09};
 }
 
+struct MetricRhsFirstIntegralFunctor
+{
+    GRMetric<4>* metric;
+
+    MetricRhsFirstIntegralFunctor(GRMetric<4>* m)
+        : metric(m) {}
+
+    inline State<4> operator()(double t, const State<4>& s) const
+    {
+        return metric->MetricFirstIntegralRhs(
+            t,
+            const_cast<State<4>&>(s),   // если не поменяешь сигнатуру
+            0,
+            zeroVectorField<4>(),
+            false
+        );
+    }
+};
+
 void Ray::integrateRay(double time, GRMetric<4>* grMetric, Manifold<4>* manifold, int countBodies, const Body<4>* const* bodies, const Point<4>* embBodies, bool isUsingGeodesicRHS){
     double base_dt = 0.02;
     double base_dx = 0.02;
@@ -25,6 +44,8 @@ void Ray::integrateRay(double time, GRMetric<4>* grMetric, Manifold<4>* manifold
     grMetric->computeIntegralParams(*this->state);
     double r_sky = 100;
     int steps = 0;
+
+    MetricRhsFirstIntegralFunctor rhs(grMetric);
 
     while (integratedTime <= time){
         steps++;
@@ -60,9 +81,7 @@ void Ray::integrateRay(double time, GRMetric<4>* grMetric, Manifold<4>* manifold
                 false
             );
         }else{
-            *this->state = computeRK4<4>(dt, [grMetric](double t, State<4> state) {
-                return grMetric->MetricFirstIntegralRhs(t, state, 0, zeroVectorField<4>(), false);
-            }, *this->state, dx);
+            *this->state = computeRK4<4>(dt, rhs, *this->state, dx);
         }
 
         // TODO: do red bias effect

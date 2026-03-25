@@ -31,11 +31,54 @@ void Observer::keyCallbackDispatcher(GLFWwindow* window, int key, int scancode, 
     }
 }
 
+double dot(const std::array<std::array<double,4>,4>& g, std::array<double,4> a, std::array<double,4> b){
+    double sum = 0;
+
+    for(int i = 0;i != 4;i++){
+        for(int j = 0;j != 4;j++){
+            sum+=g[i][j] * a[i] * b[j];
+        }
+    }
+    
+    return sum;
+}
+
+std::array<double, 4> normalize(const std::array<std::array<double,4>,4>& g, std::array<double,4> v){
+    std::array<double, 4> n{};
+
+    double norm = 1 / sqrt(abs(dot(g, v, v)));
+
+    for(int i = 0;i != 4;i++){
+        n[i] = v[i] * norm;
+    }
+
+    return n;
+}
+
 void Observer::createTetrad(){
     State<4>* state = this->body->getState();
 
-    this->tetrad.e[0] = glm::vec4(state->v0[0], state->v0[1], state->v0[2], state->v0[3]);
-    
+    std::array<std::array<double, 4>, 4> g = this->getManifold()->getMetric()->getMatrixAtPoint(state->x0);
+
+    this->tetrad[0] = state->v0;
+
+    this->tetrad[1] = {0, 1, 0, 0};
+    this->tetrad[2] = {0, 0, 1, 0};
+    this->tetrad[3] = {0, 0, 0, 1};
+
+    for(int i = 1;i != 4;i++){
+        for(int j = 0;j != 4;j++){
+            this->tetrad[i][j] -= (dot(g, state->v0, this->tetrad[i])) * state->v0[j];
+        }
+
+        for(int k = 1;k < i;k++){
+            for(int j = 0;j != 4;j++){
+                this->tetrad[i][j] += (dot(g, this->tetrad[k], this->tetrad[i])) * this->tetrad[k][j];
+            }
+        }
+
+        this->tetrad[i] = normalize(g, this->tetrad[i]);
+    }
 }
 
 void Observer::update(){
@@ -101,3 +144,4 @@ GRMetric<4>* Observer::getGRMetric(){
 Manifold<4>* Observer::getManifold(){
     return this->manifold;
 }
+

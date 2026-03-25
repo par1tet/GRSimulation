@@ -16,6 +16,7 @@ target_compile_options(grSim PRIVATE
     -O3
     -march=native
     -ffast-math
+    -funroll-loops
 )
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp")

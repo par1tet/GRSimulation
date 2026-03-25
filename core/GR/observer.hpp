@@ -6,9 +6,7 @@
 #include<kinematics/body.hpp>
 #include<diffgeomeng/classes/diff/Manifold.hpp>
 
-struct Tetrad{
-    glm::mat4 e;
-};
+using Tetrad = std::array<std::array<double, 4>, 4>;
 
 class Observer{
 public:
