@@ -7,7 +7,7 @@ Camera::Camera(GLFWwindow* window){
     this->lastX = WIDTH / 2;
     this->lastY = HEIGHT / 2;
 
-    this->yaw = -90.f + 0.f;
+    this->yaw = -90.f + 120.f;
     this->pitch = 0.f;
     this->sens = 0.05;
 

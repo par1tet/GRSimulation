@@ -56,29 +56,65 @@ std::array<double, 4> normalize(const std::array<std::array<double,4>,4>& g, std
 }
 
 void Observer::createTetrad(){
-    State<4>* state = this->body->getState();
+    const State<4>* state = this->body->getState();
 
     std::array<std::array<double, 4>, 4> g = this->getManifold()->getMetric()->getMatrixAtPoint(state->x0);
 
-    this->tetrad[0] = state->v0;
+    // this->tetrad[0] = state->v0;
+    // this->tetrad[1] = {0, 1, 0, 0};
+    // this->tetrad[2] = {0, 0, 1, 0};
+    // this->tetrad[3] = {0, 0, 0, 1};
 
-    this->tetrad[1] = {0, -1, 0, 0};
-    this->tetrad[2] = {0, 0, 1, 0};
-    this->tetrad[3] = {0, 0, 0, 1};
+    double f = 1.0 - 2/state->x0[1];
 
-    for(int i = 1;i != 4;i++){
-        for(int j = 0;j != 4;j++){
-            this->tetrad[i][j] -= (dot(g, state->v0, this->tetrad[i])) * state->v0[j];
+    this->tetrad[0] = {1/sqrt(f), 0, 0, 0};
+    this->tetrad[1] = {0, sqrt(f), 0, 0};
+    this->tetrad[2] = {0, 0, 1/state->x0[1], 0};
+    this->tetrad[3] = {0, 0, 0, 1/(state->x0[1] * sin(state->x0[2]))};
+    for(int a = 0; a < 4; a++){
+        for(int b = 0; b < 4; b++){
+            std::cout << "g(e_" << a << ", e_" << b << ") = " << g[a][b] << std::endl;
         }
-
-        for(int k = 1;k < i;k++){
-            for(int j = 0;j != 4;j++){
-                this->tetrad[i][j] += (dot(g, this->tetrad[k], this->tetrad[i])) * this->tetrad[k][j];
-            }
-        }
-
-        this->tetrad[i] = normalize(g, this->tetrad[i]);
     }
+
+    // for(int i = 1;i != 4;i++){
+    //     for(int j = 0;j != 4;j++){
+    //         this->tetrad[i][j] -= (dot(g, state->v0, this->tetrad[i])) * state->v0[j];
+    //     }
+
+    //     for(int k = 1;k < i;k++){
+    //         for(int j = 0;j != 4;j++){
+    //             this->tetrad[i][j] -= (dot(g, this->tetrad[k], this->tetrad[i])) * this->tetrad[k][j];
+    //         }
+    //     }
+
+    //     this->tetrad[i] = normalize(g, this->tetrad[i]);
+
+    //         this->tetrad[i] = this->manifold->normalizeVector(this->tetrad[i], state->x0, -1); // -> -1
+    // }
+    // for(int i = 1; i < 4; i++){
+
+    //     // проекция на e0
+    //     double proj0 = dot(g, this->tetrad[0], this->tetrad[i]) 
+    //                 / dot(g, this->tetrad[0], this->tetrad[0]);
+
+    //     for(int j = 0; j < 4; j++){
+    //         this->tetrad[i][j] -= proj0 * this->tetrad[0][j];
+    //     }
+
+    //     // проекции на предыдущие
+    //     for(int k = 1; k < i; k++){
+    //         double proj = dot(g, this->tetrad[k], this->tetrad[i]) 
+    //                     / dot(g, this->tetrad[k], this->tetrad[k]);
+
+    //         for(int j = 0; j < 4; j++){
+    //             this->tetrad[i][j] -= proj * this->tetrad[k][j];
+    //         }
+    //     }
+
+    //     this->tetrad[i] = this->manifold->normalizeVector(this->tetrad[i], state->x0, -1); // -> -1
+    // }
+
     std::cout << "HUI: " << this->tetrad[1][1] << std::endl;
 
     this->applyCameraRotation();
@@ -110,7 +146,7 @@ void Observer::update(){
         localSpeed += glm::normalize(glm::cross(camDir, upVector)) * obsSpeed;
     }
 
-    State<4>* state = this->body->getState();
+    const State<4>* state = this->body->getState();
     Point<4> newSpeed = state->v0;
     Point<4> newPos = state->x0;
 

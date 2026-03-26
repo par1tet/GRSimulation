@@ -15,9 +15,9 @@ class Body {
 public:
     Body(State<N>* state, glm::vec4 force, float radius, unsigned long long mass);
 
-    State<N>* getState();
+    State<N>* getState() const;
     void setState(State<N>* state);
-    float getSelfTime();
+    float getSelfTime() const;
     void setSelfTime(float time);
     float getRadius() const;
 

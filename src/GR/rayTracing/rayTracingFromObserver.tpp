@@ -61,37 +61,25 @@ void RayTracingFromObserver<width, height>::renderPixels(){
         bodiesArr[i] = bodies[i];
     }
 
-    #pragma omp parallel
+    //#pragma omp parallel
     {
         State<4> state;
         Ray ray(&state, manifold);
 
-        #pragma omp for schedule(dynamic,   1)
+        //#pragma omp for schedule(dynamic,   1)
         for(int py = 0;py < height;py++){
             for(int px = 0;px < width;px++){
                 const glm::vec3& dirPhoton = this->photonDirs[px + py * width];
 
-                glm::vec4 kVel ={
-                    tetrad[0][0]
-                    + dirPhoton.x * tetrad[1][0]
-                    + dirPhoton.y * tetrad[2][0]
-                    + dirPhoton.z * tetrad[3][0],
+                glm::vec4 kVel;
 
-                    tetrad[0][1]
-                    + dirPhoton.x * tetrad[1][1]
-                    + dirPhoton.y * tetrad[2][1]
-                    + dirPhoton.z * tetrad[3][1],
-
-                    tetrad[0][2]
-                    + dirPhoton.x * tetrad[1][2]
-                    + dirPhoton.y * tetrad[2][2]
-                    + dirPhoton.z * tetrad[3][2],
-
-                    tetrad[0][3]
-                    + dirPhoton.x * tetrad[1][3]
-                    + dirPhoton.y * tetrad[2][3]
-                    + dirPhoton.z * tetrad[3][3],
-                };
+                for (int mu = 0; mu < 4; mu++) {
+                    kVel[mu] =
+                        tetrad[0][mu] +
+                        dirPhoton.x * tetrad[1][mu] +
+                        dirPhoton.y * tetrad[2][mu] +
+                        dirPhoton.z * tetrad[3][mu];
+                }
 
                 Point<4> rayStartPos(obsPos);
 
@@ -104,6 +92,27 @@ void RayTracingFromObserver<width, height>::renderPixels(){
                 state.v0[1] = kVel[1];
                 state.v0[2] = kVel[2];
                 state.v0[3] = kVel[3];
+
+                double norm = 0;
+                std::array<std::array<double, 4>, 4> g = manifold->getMetric()->getMatrixAtPoint(state.x0);
+                for(int nu = 0;nu != 4;nu++){
+                    for(int mu = 0;mu != 4;mu++){
+                        norm += g[nu][mu] * state.v0[nu] * state.v0[mu];
+                    }
+                }
+                std::cout << "NORM KVEL: /// : " << norm << std::endl;
+
+                for(int a = 0; a < 4; a++){
+                    for(int b = 0; b < 4; b++){
+                        double val = 0;
+                        for(int mu = 0; mu < 4; mu++){
+                            for(int nu = 0; nu < 4; nu++){
+                                val += g[mu][nu] * tetrad[a][mu] * tetrad[b][nu];
+                            }
+                        }
+                        std::cout << "g(e_" << a << ", e_" << b << ") = " << val << std::endl;
+                    }
+                }
 
                 //std::cout << "start render ray at pixel: (" << px << ", " << py << ")" << std::endl;
                 ray.integrateRay(15, grMetric, manifold, countBodies, bodiesArr, embBodies, false);

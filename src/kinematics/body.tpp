@@ -10,7 +10,7 @@ Body<N>::Body(State<N> *state, glm::vec4 force, float radius, unsigned long long
 }
 
 template <size_t N>
-State<N>* Body<N>::getState(){
+State<N>* Body<N>::getState() const{
     return this->state;
 }
 
@@ -25,7 +25,7 @@ void Body<N>::setSelfTime(float newSelfTime){
 }
 
 template <size_t N>
-float Body<N>::getSelfTime(){
+float Body<N>::getSelfTime() const {
     return this->selftime;
 }
 
