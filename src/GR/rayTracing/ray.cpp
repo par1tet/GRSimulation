@@ -11,7 +11,9 @@ Ray::Ray(State<4>* state, Manifold<4>* manifold){
 
 // TODO: do real sky texture
 Pixel computeSkyRay(State<4>* state){
-    return glm::vec3{0, 0.08, 0.09};
+
+    return {1, 1.002, 1.007};
+    //return {0, 0.002, 0.007};
 }
 
 struct MetricRhsFirstIntegralFunctor
@@ -34,15 +36,15 @@ struct MetricRhsFirstIntegralFunctor
 };
 
 void Ray::integrateRay(double time, GRMetric<4>* grMetric, Manifold<4>* manifold, int countBodies, const Body<4>* const* bodies, const Point<4>* embBodies, bool isUsingGeodesicRHS){
-    double base_dt = 0.02;
-    double base_dx = 0.02;
+    double base_dt = 0.03;
+    double base_dx = 0.03;
     double integratedTime = 0;
 
     // default value
-    this->pixel = glm::vec3{0, 0.08, 0.09};
+    this->pixel = {0, 0.08, 0.09};
     
     grMetric->computeIntegralParams(*this->state);
-    double r_sky = 100;
+    double r_sky = 40;
     int steps = 0;
 
     MetricRhsFirstIntegralFunctor rhs(grMetric);
@@ -54,12 +56,20 @@ void Ray::integrateRay(double time, GRMetric<4>* grMetric, Manifold<4>* manifold
         double dx = base_dx * std::max(1.0, r/10.0);;
 
         if(steps >= 2000){
+            std::cout << "piza" << std::endl;
             return;
         }
 
         // TODO: <= 2*M fall into blackhole
         if(r <= 2){
-            this->pixel = glm::vec3{0};
+            this->pixel = {0,0,0};
+            std::cout << "BLACK HOUL" << std::endl;
+            std::cout << "BLACK HOUL" << std::endl;
+            std::cout << "BLACK HOUL" << std::endl;
+            std::cout << "BLACK HOUL" << std::endl;
+            std::cout << "BLACK HOUL" << std::endl;
+            std::cout << "BLACK HOUL" << std::endl;
+            std::cout << "BLACK HOUL" << std::endl;
 
             return;
         }
@@ -93,7 +103,7 @@ void Ray::integrateRay(double time, GRMetric<4>* grMetric, Manifold<4>* manifold
             double r = bodies[i]->getRadius();
 
             if(glm::dot(dir, dir) <= r*r){
-                this->pixel = glm::vec3{1.f, 0.f, 0.f};
+                this->pixel = {1.f, 0.f, 0.f};
 
                 return;
             }
@@ -101,7 +111,7 @@ void Ray::integrateRay(double time, GRMetric<4>* grMetric, Manifold<4>* manifold
 
         integratedTime += dt;
     }
-
+    std::cout << "R OF THE RAY: " << state->x0[1] << std::endl;
     this->pixel = computeSkyRay(this->state);
 }
 

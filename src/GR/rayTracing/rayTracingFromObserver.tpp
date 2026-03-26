@@ -4,7 +4,7 @@ RayTracingFromObserver<width, height>::RayTracingFromObserver(Observer* obs, std
     this->FOV = FOV;
     this->bodies = bodies;
     this->observer = obs;
-    this->pixelsBuffer.fill(glm::vec3{0}); 
+    this->pixelsBuffer.fill({0,0,0}); 
 
     const double invW = 1.0 / width;
     const double invH = 1.0 / height;
@@ -106,7 +106,7 @@ void RayTracingFromObserver<width, height>::renderPixels(){
                 state.v0[3] = kVel[3];
 
                 //std::cout << "start render ray at pixel: (" << px << ", " << py << ")" << std::endl;
-                ray.integrateRay(5, grMetric, manifold, countBodies, bodiesArr, embBodies, false);
+                ray.integrateRay(15, grMetric, manifold, countBodies, bodiesArr, embBodies, false);
                 
 
                 this->pixelsBuffer[px + py * width] = (ray.getPixel());

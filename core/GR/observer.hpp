@@ -22,6 +22,7 @@ public:
     Tetrad getTetrad();
     GRMetric<4>* getGRMetric();
     Manifold<4>* getManifold();
+    void applyCameraRotation();
 
 private:
     bool keys[255]{false};

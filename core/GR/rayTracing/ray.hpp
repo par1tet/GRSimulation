@@ -7,7 +7,7 @@
 #include<kinematics/body.hpp>
 #include <omp.h>
 
-typedef glm::vec2 Pixel;
+using Pixel = std::array<float, 3>;
 
 class Ray{
 public:

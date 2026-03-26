@@ -7,7 +7,7 @@ Camera::Camera(GLFWwindow* window){
     this->lastX = WIDTH / 2;
     this->lastY = HEIGHT / 2;
 
-    this->yaw = -90.f;
+    this->yaw = -90.f + 0.f;
     this->pitch = 0.f;
     this->sens = 0.05;
 
@@ -18,6 +18,11 @@ Camera::Camera(GLFWwindow* window){
     front.z = cos(glm::radians(this->pitch)) * sin(glm::radians(this->yaw));
 
     this->direction = glm::normalize(front);
+    std::cout << "PINESJjl" << std::endl;
+    std::cout << this->direction[0] << std::endl;
+    std::cout << this->direction[1] << std::endl;
+    std::cout << this->direction[2] << std::endl;
+    //this->direction = {0,0,1};
     this->upVector = glm::vec3(0,1,0);
 
     glfwSetCursorPosCallback(window, this->keyCallbackDispatcherMouse);
@@ -64,4 +69,12 @@ glm::vec3 Camera::getDirection(){
 
 glm::vec3 Camera::getUpVector(){
     return this->upVector;
+}
+
+double Camera::getYaw(){
+    return this->yaw;
+}
+
+double Camera::getPitch(){
+    return this->pitch;
 }

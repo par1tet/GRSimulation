@@ -62,7 +62,7 @@ void Observer::createTetrad(){
 
     this->tetrad[0] = state->v0;
 
-    this->tetrad[1] = {0, 1, 0, 0};
+    this->tetrad[1] = {0, -1, 0, 0};
     this->tetrad[2] = {0, 0, 1, 0};
     this->tetrad[3] = {0, 0, 0, 1};
 
@@ -79,6 +79,11 @@ void Observer::createTetrad(){
 
         this->tetrad[i] = normalize(g, this->tetrad[i]);
     }
+    std::cout << "HUI: " << this->tetrad[1][1] << std::endl;
+
+    this->applyCameraRotation();
+
+    std::cout << "HUI2: " << this->tetrad[1][1] << std::endl;
 }
 
 void Observer::update(){
@@ -114,7 +119,34 @@ void Observer::update(){
         newPos.x[i] += localSpeed[i-1] * dt;
     }
 
+
     this->body->setState(new State<4>(newPos.x, newSpeed.x));
+}
+
+void Observer::applyCameraRotation(){
+    double yaw   = this->camera->getYaw();
+    double pitch = this->camera->getPitch();
+
+    auto& e1 = tetrad[1];
+    auto& e2 = tetrad[2];
+    auto& e3 = tetrad[3];
+
+    for(int i = 0; i < 4; i++){
+        double new_e1 =  cos(yaw)*e1[i] + sin(yaw)*e2[i];
+        double new_e2 = -sin(yaw)*e1[i] + cos(yaw)*e2[i];
+        e1[i] = new_e1;
+        e2[i] = new_e2;
+    }
+
+    for(int i = 0; i < 4; i++){
+        double new_e1 =  cos(pitch)*e1[i] + sin(pitch)*e3[i];
+        double new_e3 = -sin(pitch)*e1[i] + cos(pitch)*e3[i];
+        e1[i] = new_e1;
+        e3[i] = new_e3;
+    }
+
+    std::cout << "yaw: " << yaw << std::endl;
+    std::cout << "pitch: " << pitch << std::endl;
 }
 
 Body<4>* Observer::getBody(){

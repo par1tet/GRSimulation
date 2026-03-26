@@ -15,6 +15,8 @@ public:
     void update();
     glm::vec3 getUpVector();
     glm::vec3 getDirection();
+    double getYaw();
+    double getPitch();
 
 private:
     glm::vec3 direction, upVector;
