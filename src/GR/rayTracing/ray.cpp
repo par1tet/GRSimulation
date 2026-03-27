@@ -3,6 +3,8 @@
 #include<diffgeomeng/classes/diff/Geodesic.hpp>
 #include<diffgeomeng/classes/compute/yoshida4_realize.hpp>
 #include<iostream>
+#include<algorithm>
+
 
 Ray::Ray(State<4>* state, Manifold<4>* manifold){
     this->state = state;
@@ -66,20 +68,25 @@ struct MetricRhsFirstIntegralFunctor
 // };
 
 struct SchwarzschildHamiltonian : Hamiltonian<4> {
-
-    double M;
-
     inline Vector<4> dHdp(Vector<4> x, Vector<4> p) const override {
         Vector<4> out{};
 
         double r = x[1];
         double th = x[2];
+        double sth = sin(th);
 
-        out[0] = -p[0] / (1 - 2*M/r);
-        out[1] = (1 - 2*M/r) * p[1];
+        r = std::max(r, 2 + 1e-6);
+        if (abs(sth) < 1e-6) {
+            sth = (sth >= 0 ? 1e-6 : -1e-6);
+        }
+
+        out[0] = -p[0] / (1 - 2/r);
+        out[1] = (1 - 2/r) * p[1];
         out[2] = p[2] / (r*r);
-        out[3] = p[3] / (r*r * sin(th)*sin(th));
-
+        out[3] = p[3] / (r*r * sth*sth);
+        for(int i = 0;i != 4;i++){
+            std::cout << "iOUT DHDP: " << i << ":::" << out[i] << std::endl;
+        }
         return out;
     }
 
@@ -88,20 +95,35 @@ struct SchwarzschildHamiltonian : Hamiltonian<4> {
 
         double r = x[1];
         double th = x[2];
+        double sth = sin(th);
+        double cth = cos(th);
+
+        r = std::max(r, 2 + 1e-6);
+
+        if (abs(sth) < 1e-6) {
+            sth = (sth >= 0 ? 1e-6 : -1e-6);
+        }
+
+        if (abs(cth) < 1e-6) {
+            cth = (cth >= 0 ? 1e-6 : -1e-6);
+        }
 
         out[0] = 0;
 
         out[1] =
-            (M / (r*r * pow(1 - 2*M/r, 2))) * p[0]*p[0]
-          + (M / (r*r)) * p[1]*p[1]
+            0.5 * (1.0 / (r*r * pow(1 - 2/r, 2))) * p[0]*p[0]
+          + (1.0 / (r*r)) * p[1]*p[1]
           - (1.0 / (r*r*r)) * p[2]*p[2]
-          - (1.0 / (r*r*r * sin(th)*sin(th))) * p[3]*p[3];
+          - (1.0 / (r*r*r * sth*sth)) * p[3]*p[3];
 
         out[2] =
-            -cos(th) / (r*r * pow(sin(th), 3))
+            0.5 * -cth / (r*r * pow(sth, 3))
             * p[3]*p[3];
 
         out[3] = 0;
+        for(int i = 0;i != 4;i++){
+            std::cout << "iOUT DHDX: " << i << ":::" << out[i] << std::endl;
+        }
 
         return out;
     }
@@ -187,6 +209,9 @@ void Ray::integrateRay(double time, GRMetric<4>* grMetric, Manifold<4>* manifold
             std::cout << "WRONG NORMALIZE FOR RAY:: " << norm << std::endl;
             std::cout << "-----------------ALARM-----------------" << std::endl;
         //}
+    
+            std::cout << "r: " << this->state->x0[1] << std::endl;
+            std::cout << "theta: " << this->state->x0[2] << std::endl;
 
         // TODO: do red bias effect
         for(int i = 0;i != countBodies;i++){

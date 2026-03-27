@@ -95,25 +95,28 @@ void RayTracingFromObserver<width, height>::renderPixels(){
                         state.v0[k] += kVel[i] * g[k][i];
                     }
                 }
-                // double norm = 0;
-                // for(int nu = 0;nu != 4;nu++){
-                //     for(int mu = 0;mu != 4;mu++){
-                //         norm += g[nu][mu] * state.v0[nu] * state.v0[mu];
-                //     }
-                // }
-                // std::cout << "NORM KVEL: /// : " << norm << std::endl;
+                double norm = 0;
+                for(int nu = 0;nu != 4;nu++){
+                    for(int mu = 0;mu != 4;mu++){
+                        norm += g[nu][mu] * state.v0[nu] * state.v0[mu];
+                    }
+                }
+                std::cout << "NORM KVEL: /// : " << norm << std::endl;
 
-                // for(int a = 0; a < 4; a++){
-                //     for(int b = 0; b < 4; b++){
-                //         double val = 0;
-                //         for(int mu = 0; mu < 4; mu++){
-                //             for(int nu = 0; nu < 4; nu++){
-                //                 val += g[mu][nu] * tetrad[a][mu] * tetrad[b][nu];
-                //             }
-                //         }
-                //         std::cout << "g(e_" << a << ", e_" << b << ") = " << val << std::endl;
-                //     }
-                // }
+                for(int a = 0; a < 4; a++){
+                    for(int b = 0; b < 4; b++){
+                        double val = 0;
+                        for(int mu = 0; mu < 4; mu++){
+                            for(int nu = 0; nu < 4; nu++){
+                                val += g[mu][nu] * tetrad[a][mu] * tetrad[b][nu];
+                            }
+                        }
+                        std::cout << "g(e_" << a << ", e_" << b << ") = " << val << std::endl;
+                    }
+                }
+                for(int mu = 0;mu != 4;mu++){
+                    std::cout << "p PHOTON: " << state.v0[mu] << std::endl;
+                }
 
                 //std::cout << "start render ray at pixel: (" << px << ", " << py << ")" << std::endl;
                 ray.integrateRay(15, grMetric, manifold, countBodies, bodiesArr, embBodies, false);
