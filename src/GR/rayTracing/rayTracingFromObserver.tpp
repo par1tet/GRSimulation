@@ -89,12 +89,14 @@ void RayTracingFromObserver<width, height>::renderPixels(){
                 rayStartPos.x[3] += eps * kVel[3];
 
                 state.x0 = rayStartPos.x;
+                state.v0 = {0,0,0,0};
 
                 for(int k = 0;k != 4;k++){
                     for(int i = 0;i != 4;i++){
                         state.v0[k] += kVel[i] * g[k][i];
                     }
                 }
+
                 double norm = 0;
                 for(int nu = 0;nu != 4;nu++){
                     for(int mu = 0;mu != 4;mu++){
